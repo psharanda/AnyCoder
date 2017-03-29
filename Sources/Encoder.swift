@@ -84,20 +84,20 @@ public struct Encoder {
     
     //MARK: dict
     public static func encode<T: Encodable>(_ value: [String: T]) -> Any {
-        return value.map { $0.encode() }
+        return value.map { $0.1.encode() }
     }
     
     public static func encode<T: Encodable>(_ value: [String: T]?, skipIfNil: Bool = false) -> Any? {
-        return value.flatMap { $0.map { $0.encode() } } ?? (skipIfNil ? nil : NSNull())
+        return value.flatMap { $0.map { $0.1.encode() } } ?? (skipIfNil ? nil : NSNull())
     }
     
     //MARK: dict of arrays
     public static func encode<T: Encodable>(_ value: [String: [T]]) -> Any {
-        return value.map { $0.map { $0.encode() } }
+        return value.map { $0.1.map { $0.encode() } }
     }
     
     public static func encode<T: Encodable>(_ value: [String: [T]]?, skipIfNil: Bool = false) -> Any? {
-        return value.flatMap { $0.map { $0.map { $0.encode() } } } ?? (skipIfNil ? nil : NSNull())
+        return value.flatMap { $0.map { $0.1.map { $0.encode() } } } ?? (skipIfNil ? nil : NSNull())
     }
     
     //MARK: set

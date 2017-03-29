@@ -42,14 +42,14 @@ public struct Decoder {
         if let value = value as? T {
             return value
         } else {
-            throw DecoderErrorType.invalidType(value)
+            throw DecoderErrorType.invalidType(T.self, value).error
         }
     }
     
     public func decoder(forKey key: String) throws -> Decoder {
         
         guard let value = try asDictionary()[key] else {
-            throw DecoderErrorType.missing
+            throw DecoderErrorType.missing.error
         }
         return Decoder(value: value)
     }
@@ -60,7 +60,7 @@ public struct Decoder {
             if nilIfMissing {
                 return nil
             }
-            throw DecoderErrorType.missing
+            throw DecoderErrorType.missing.error
         }
         return Decoder(value: value)
     }
@@ -78,31 +78,20 @@ public struct Decoder {
         if let value = try T.init(decoder: self) {
             return value
         } else {
-            throw DecoderErrorType.invalidValue(value)
+            throw DecoderErrorType.failed(T.self, value).error
         }
     }
     
     private func decodeSelf<T: Decodable>() throws -> T? {
         return try T.init(decoder: self)
     }
-    
-    private func doAndThrowIfNullWasFound<T>(action: () throws ->T) throws -> T {
-        do {
-            return try action()
-        }
-        catch (let error as DecoderErrorType) {
-            throw error
-        }
-        catch {
-            throw error
-        }
-    }
+
     
     private func doAndReturnNilIfNullWasFound<T>(action: () throws ->T?) throws -> T? {
         do {
             return try action()
         }
-        catch (let error as DecoderErrorType) {
+        catch (let error as DecoderError) {
             if value is NSNull {
                 return nil
             } else {
@@ -115,9 +104,7 @@ public struct Decoder {
     }
     
     public func decode<T: Decodable>() throws -> T {
-        return try doAndThrowIfNullWasFound {
-            try decodeSelf()
-        }
+        return try decodeSelf()
     }
     
     public func decode<T: Decodable>() throws -> T? {
@@ -128,70 +115,162 @@ public struct Decoder {
     
     //MARK:- decode self as array
     public func decode<T: Decodable>() throws -> [T] {
-        return try doAndThrowIfNullWasFound {
-            try asArray().map { try Decoder(value: $0).decode() }
+        return try asArray().enumerated().map {
+            do {
+                return try Decoder(value: $0.element).decode()
+            }
+            catch (let error as DecoderError) {
+                throw error.backtraceError(path: .index($0.offset))
+            }
+            catch {
+                throw error
+            }
         }
     }
     
     public func decode<T: Decodable>() throws -> [T]? {
         return try doAndReturnNilIfNullWasFound {
-            try asArray().map { try Decoder(value: $0).decode() }
+            try asArray().enumerated().map {
+                do {
+                    return try Decoder(value: $0.element).decode()
+                }
+                catch (let error as DecoderError) {
+                    throw error.backtraceError(path: .index($0.offset))
+                }
+                catch {
+                    throw error
+                }
+            }
         }
         
     }
     
     //MARK:- decode self as map
     public func decode<T: Decodable>() throws -> [String: T] {
-        return try doAndThrowIfNullWasFound {
-            try asDictionary().map { try Decoder(value: $0).decode() }
+        return try asDictionary().map {
+            do {
+                return try Decoder(value: $0.1).decode()
+            }
+            catch (let error as DecoderError) {
+                throw error.backtraceError(path: .key($0.0))
+            }
+            catch {
+                throw error
+            }
         }
     }
     
     public func decode<T: Decodable>() throws -> [String: T]? {
         return try doAndReturnNilIfNullWasFound {
-            try asDictionary().map { try Decoder(value: $0).decode() }
+            try asDictionary().map {
+                do {
+                    return try Decoder(value: $0.1).decode()
+                }
+                catch (let error as DecoderError) {
+                    throw error.backtraceError(path: .key($0.0))
+                }
+                catch {
+                    throw error
+                }
+            }
         }
     }
     
     //MARK:- decode self as map of arrays
     public func decode<T: Decodable>() throws -> [String: [T]] {
-        return try doAndThrowIfNullWasFound {
-            return try asDictionaryOfArrays().map { try Decoder(value: $0).decode() }
+        return try asDictionaryOfArrays().map {
+            do {
+                return try Decoder(value: $0.1).decode()
+            }
+            catch (let error as DecoderError) {
+                throw error.backtraceError(path: .key($0.0))
+            }
+            catch {
+                throw error
+            }
         }
     }
     
     public func decode<T: Decodable>() throws -> [String: [T]]? {
         return try doAndReturnNilIfNullWasFound {
-            try asDictionaryOfArrays().map { try Decoder(value: $0).decode() }
+            try asDictionaryOfArrays().map {
+                do {
+                    return try Decoder(value: $0.1).decode()
+                }
+                catch (let error as DecoderError) {
+                    throw error.backtraceError(path: .key($0.0))
+                }
+                catch {
+                    throw error
+                }
+            }
         }
     }
     
     //MARK:- decode self as set
     public func decode<T: Decodable & Hashable>() throws -> Set<T> {
-        return try doAndThrowIfNullWasFound {
-            return try Set(asArray().map { try Decoder(value: $0).decode() })
-        }
+        return try Set(asArray().enumerated().map {
+            do {
+                return try Decoder(value: $0.element).decode()
+            }
+            catch (let error as DecoderError) {
+                throw error.backtraceError(path: .index($0.offset))
+            }
+            catch {
+                throw error
+            }
+        })
     }
     
     public func decode<T: Decodable & Hashable>() throws -> Set<T>? {
         return try doAndReturnNilIfNullWasFound {
-            return try Set(asArray().map { try Decoder(value: $0).decode() })
+            return try Set(asArray().enumerated().map {
+                do {
+                    return try Decoder(value: $0.element).decode()
+                }
+                catch (let error as DecoderError) {
+                    throw error.backtraceError(path: .index($0.offset))
+                }
+                catch {
+                    throw error
+                }
+            })
         }
     }
     
     //MARK:- decode value at key
+    
+    private func doDecodeAndRethrowIfNeeded<T>(key: String, action: () throws ->T) throws -> T {
+        do {
+            return try action()
+        }
+        catch (let error as DecoderError) {
+            throw error.backtraceError(path: .key(key))
+        }
+        catch {
+            throw error
+        }
+    }
+    
     public func decode<T: Decodable>(key: String) throws -> T {
-        return try decoder(forKey: key).decode()
+        return try doDecodeAndRethrowIfNeeded(key: key) {
+            try decoder(forKey: key).decode()
+        }
     }
     
     public func decode<T: Decodable>(key: String,  nilIfMissing: Bool = false) throws -> T? {
-        return try decoder(forKey: key, nilIfMissing: nilIfMissing)?.decode() as T?
+        
+        return try doDecodeAndRethrowIfNeeded(key: key) {
+            try decoder(forKey: key, nilIfMissing: nilIfMissing)?.decode() as T?
+        }
     }
     
     public func decode<T: Decodable>(key: String, defaultValue: T) throws -> T {
         switch try decodingResultForKey(key, defaultValue: defaultValue) {
         case .usingDecoder(let decoder):
-            return try decoder.decode()
+            return try doDecodeAndRethrowIfNeeded(key: key) {
+                try decoder.decode()
+            }
         case .usingDefaultValue(let value):
             return value
         }
@@ -200,7 +279,9 @@ public struct Decoder {
     public func decode<T: Decodable>(key: String, defaultValue: T?) throws -> T? {
         switch try decodingResultForKey(key, defaultValue: defaultValue) {
         case .usingDecoder(let decoder):
-            return try decoder.decode() as T?
+            return try doDecodeAndRethrowIfNeeded(key: key) {
+                try decoder.decode() as T?
+            }
         case .usingDefaultValue(let value):
             return value
         }
@@ -208,17 +289,23 @@ public struct Decoder {
     
     //MARK:- decode self as array
     public func decode<T: Decodable>(key: String) throws -> [T] {
-        return try decoder(forKey: key).decode()
+        return try doDecodeAndRethrowIfNeeded(key: key) {
+            try  decoder(forKey: key).decode()
+        }
     }
     
     public func decode<T: Decodable>(key: String, nilIfMissing: Bool = false) throws -> [T]? {
-        return try decoder(forKey: key, nilIfMissing: nilIfMissing)?.decode() as [T]?
+        return try doDecodeAndRethrowIfNeeded(key: key) {
+            try  decoder(forKey: key, nilIfMissing: nilIfMissing)?.decode() as [T]?
+        }
     }
     
     public func decode<T: Decodable>(key: String, defaultValue: [T]) throws -> [T] {
         switch try decodingResultForKey(key, defaultValue: defaultValue) {
         case .usingDecoder(let decoder):
-            return try decoder.decode()
+            return try doDecodeAndRethrowIfNeeded(key: key) {
+                try  decoder.decode()
+            }
         case .usingDefaultValue(let value):
             return value
         }
@@ -227,7 +314,9 @@ public struct Decoder {
     public func decode<T: Decodable>(key: String, defaultValue: [T]?) throws -> [T]? {
         switch try decodingResultForKey(key, defaultValue: defaultValue) {
         case .usingDecoder(let decoder):
-            return try decoder.decode() as [T]?
+            return try doDecodeAndRethrowIfNeeded(key: key) {
+                try  decoder.decode() as [T]?
+            }
         case .usingDefaultValue(let value):
             return value
         }
@@ -235,17 +324,23 @@ public struct Decoder {
     
     //MARK:- decode self as map
     public func decode<T: Decodable>(key: String) throws -> [String: T] {
-        return try decoder(forKey: key).decode()
+        return try doDecodeAndRethrowIfNeeded(key: key) {
+            try  decoder(forKey: key).decode()
+        }
     }
     
     public func decode<T: Decodable>(key: String, nilIfMissing: Bool = false) throws -> [String: T]? {
-        return try decoder(forKey: key, nilIfMissing: nilIfMissing)?.decode() as [String: T]?
+        return try doDecodeAndRethrowIfNeeded(key: key) {
+            try  decoder(forKey: key, nilIfMissing: nilIfMissing)?.decode() as [String: T]?
+        }
     }
     
     public func decode<T: Decodable>(key: String, defaultValue: [String: T]) throws -> [String: T] {
         switch try decodingResultForKey(key, defaultValue: defaultValue) {
         case .usingDecoder(let decoder):
-            return try decoder.decode()
+            return try doDecodeAndRethrowIfNeeded(key: key) {
+                try  decoder.decode()
+            }
         case .usingDefaultValue(let value):
             return value
         }
@@ -254,7 +349,9 @@ public struct Decoder {
     public func decode<T: Decodable>(key: String, defaultValue: [String: T]?) throws -> [String: T]? {
         switch try decodingResultForKey(key, defaultValue: defaultValue) {
         case .usingDecoder(let decoder):
-            return try decoder.decode() as [String: T]?
+            return try doDecodeAndRethrowIfNeeded(key: key) {
+                try  decoder.decode() as [String: T]?
+            }
         case .usingDefaultValue(let value):
             return value
         }
@@ -262,17 +359,23 @@ public struct Decoder {
     
     //MARK:- decode self as map of arrays
     public func decode<T: Decodable>(key: String) throws -> [String: [T]] {
-        return try decoder(forKey: key).decode()
+        return try doDecodeAndRethrowIfNeeded(key: key) {
+            try  decoder(forKey: key).decode()
+        }
     }
     
     public func decode<T: Decodable>(key: String, nilIfMissing: Bool = false) throws -> [String: [T]]? {
-        return try decoder(forKey: key, nilIfMissing: nilIfMissing)?.decode() as [String: [T]]?
+        return try doDecodeAndRethrowIfNeeded(key: key) {
+            try  decoder(forKey: key, nilIfMissing: nilIfMissing)?.decode() as [String: [T]]?
+        }
     }
     
     public func decode<T: Decodable>(key: String, defaultValue: [String: [T]]) throws -> [String: [T]] {
         switch try decodingResultForKey(key, defaultValue: defaultValue) {
         case .usingDecoder(let decoder):
-            return try decoder.decode()
+            return try doDecodeAndRethrowIfNeeded(key: key) {
+                try  decoder.decode()
+            }
         case .usingDefaultValue(let value):
             return value
         }
@@ -281,7 +384,9 @@ public struct Decoder {
     public func decode<T: Decodable>(key: String, defaultValue: [String: [T]]?) throws -> [String: [T]]? {
         switch try decodingResultForKey(key, defaultValue: defaultValue) {
         case .usingDecoder(let decoder):
-            return try decoder.decode() as [String: [T]]?
+            return try doDecodeAndRethrowIfNeeded(key: key) {
+                try  decoder.decode() as [String: [T]]?
+            }
         case .usingDefaultValue(let value):
             return value
         }
@@ -289,17 +394,23 @@ public struct Decoder {
     
     //MARK:- decode self as set
     public func decode<T: Decodable & Hashable>(key: String) throws -> Set<T> {
-        return try decoder(forKey: key).decode()
+        return try doDecodeAndRethrowIfNeeded(key: key) {
+            try  decoder(forKey: key).decode()
+        }
     }
     
     public func decode<T: Decodable & Hashable>(key: String) throws ->  Set<T>? {
-        return try decoder(forKey: key).decode() as Set<T>?
+        return try doDecodeAndRethrowIfNeeded(key: key) {
+            try  decoder(forKey: key).decode() as Set<T>?
+        }
     }
     
     public func decode<T: Decodable & Hashable>(key: String, defaultValue:  Set<T>) throws ->  Set<T> {
         switch try decodingResultForKey(key, defaultValue: defaultValue) {
         case .usingDecoder(let decoder):
-            return try decoder.decode()
+            return try doDecodeAndRethrowIfNeeded(key: key) {
+                try  decoder.decode()
+            }
         case .usingDefaultValue(let value):
             return value
         }
@@ -308,7 +419,9 @@ public struct Decoder {
     public func decode<T: Decodable & Hashable>(key: String, defaultValue: Set<T>?) throws -> Set<T>? {
         switch try decodingResultForKey(key, defaultValue: defaultValue) {
         case .usingDecoder(let decoder):
-            return try decoder.decode() as Set<T>?
+            return try doDecodeAndRethrowIfNeeded(key: key) {
+                try  decoder.decode() as Set<T>?
+            }
         case .usingDefaultValue(let value):
             return value
         }

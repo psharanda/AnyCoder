@@ -285,8 +285,8 @@ class AnyCoderTests: XCTestCase {
             
             XCTFail("Should have thrown")
         }
-        catch (let error as DecoderErrorType) {
-            if case .missing = error {
+        catch (let error as DecoderError) {
+            if case .missing = error.errorType {
                 XCTAssert(true)
             } else {
                 XCTFail("Unexpected error thrown: \(error)")
@@ -305,8 +305,8 @@ class AnyCoderTests: XCTestCase {
             
             XCTFail("Should have thrown")
         }
-        catch (let error as DecoderErrorType) {
-            if case .invalidType = error {
+        catch (let error as DecoderError) {
+            if case .invalidType = error.errorType {
                 XCTAssert(true)
             } else {
                 XCTFail("Unexpected error thrown: \(error)")
@@ -333,8 +333,8 @@ class AnyCoderTests: XCTestCase {
             
             XCTFail("Should have thrown")
         }
-        catch (let error as DecoderErrorType) {
-            if case .invalidValue = error {
+        catch (let error as DecoderError) {
+            if case .failed = error.errorType {
                 XCTAssert(true)
             } else {
                 XCTFail("Unexpected error thrown: \(error)")
@@ -366,8 +366,8 @@ class AnyCoderTests: XCTestCase {
             
             XCTFail("Should have thrown")
         }
-        catch (let error as DecoderErrorType) {
-            if case .invalidValue = error {
+        catch (let error as DecoderError) {
+            if case .failed = error.errorType {
                 XCTAssert(true)
             } else {
                 XCTFail("Unexpected error thrown: \(error)")
@@ -521,6 +521,60 @@ class AnyCoderTests: XCTestCase {
         let testData = try! JSONSerialization.data(withJSONObject: testJson, options: [])
         let refData = try! JSONSerialization.data(withJSONObject: json, options: [])
         XCTAssertEqual(testData, refData)
+    }
+    
+    func testKeyPath() {
+        
+        struct A: Decodable {
+            let b: B
+            
+            init?(decoder: Decoder) throws {
+                b = try decoder.decode(key: "b")
+            }
+        }
+        
+        struct B: Decodable {
+            let c: [C]
+            
+            init?(decoder: Decoder) throws {
+                c = try decoder.decode(key: "c")
+            }
+        }
+        
+        struct C: Decodable {
+            let d: String
+            
+            init?(decoder: Decoder) throws {
+                d = try decoder.decode(key: "d")
+            }
+        }
+        
+        let json: Any = ["b": [
+            "c": [ ["d":"1"],
+                   ["d":"2"],
+                   ["d":"3"],
+                   ["d": NSNull()]
+            ]
+            ]
+        ]
+        
+        do {
+            _ = try Decoder(value: json).decode() as A
+            
+            XCTFail("Should have thrown")
+        }
+        catch (let error as DecoderError) {
+            if case .invalidType = error.errorType {
+                XCTAssert(true)
+            } else {
+                XCTFail("Unexpected error thrown: \(error)")
+            }
+            XCTAssertEqual("$.b.c[3].d", error.jsonPath)
+            return
+        }
+        catch {
+            XCTFail("Unexpected error thrown: \(error)")
+        }
     }
     
 }

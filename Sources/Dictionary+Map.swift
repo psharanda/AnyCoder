@@ -7,10 +7,10 @@ import Foundation
 
 //Utils
 extension Dictionary {
-    func map<T>(_ transform: (Value) throws -> T) rethrows -> [Key: T] {
+    func map<T>(_ transform: ((Key, Value)) throws -> T) rethrows -> [Key: T] {
         var result: [Key: T] = [:]
         for (key, value) in self {
-            result[key] = try transform(value)
+            result[key] = try transform(key, value)
         }
         return result
     }
