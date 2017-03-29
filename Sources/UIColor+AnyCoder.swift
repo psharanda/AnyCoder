@@ -26,7 +26,7 @@ extension Color: Decodable {}
 
 //MARK:- UIColor
 
-extension Color: Encodable {
+extension Color: AnyEncodable {
     public func encode() -> Any {
         return asHexString
     }

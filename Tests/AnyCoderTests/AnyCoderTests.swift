@@ -14,13 +14,13 @@ import AnyCoder
 
 class AnyCoderTests: XCTestCase {
     
-    enum TestStringEnum: String, Encodable, Decodable {
+    enum TestStringEnum: String, AnyEncodable, Decodable {
         case first
         case second
         case third
     }
     
-    enum TestIntEnum: Int, Encodable, Decodable {
+    enum TestIntEnum: Int, AnyEncodable, Decodable {
         case first = 1
         case second = 2
         case third = 3
@@ -34,7 +34,7 @@ class AnyCoderTests: XCTestCase {
             name = try decoder.decode(key: "name")
         }
         
-        func encode() -> Any {
+        func encode() -> Encoder {
             var encoder = Encoder()
             encoder.encode(name, key: "name")
             return encoder
@@ -98,7 +98,7 @@ class AnyCoderTests: XCTestCase {
             optionalChildDictionary = try decoder.decode(key: "optionalChildDictionary")
         }
         
-        func encode() -> Any {
+        func encode() -> Encoder {
             var encoder = Encoder()
             encoder.encode(normalInt, key: "normalInt")
             encoder.encode(optionalInt, key: "optionalInt")
@@ -470,7 +470,7 @@ class AnyCoderTests: XCTestCase {
         struct Test: Encodable {
             let name: String?
             
-            func encode() -> Any {
+            func encode() -> Encoder {
                 var encoder = Encoder()
                 encoder.encode(name, key: "name")
                 return encoder
@@ -492,7 +492,7 @@ class AnyCoderTests: XCTestCase {
         struct Test: Encodable {
             let name: String?
             
-            func encode() -> Any {
+            func encode() -> Encoder {
                 var encoder = Encoder()
                 encoder.encode(name, key: "name", skipIfNil: true)
                 return encoder
