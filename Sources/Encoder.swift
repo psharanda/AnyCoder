@@ -31,12 +31,28 @@ extension Dictionary where Key == String, Value == Any {
         self[key] = value.flatMap { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
+    mutating public func encode<T: Encodable>(_ value: [T?], key: String) {
+        self[key] = value.encode()
+    }
+    
+    mutating public func encode<T: Encodable>(_ value: [T?]?, key: String, skipIfNil: Bool = false) {
+        self[key] = value.flatMap { $0.encode() } ?? (skipIfNil ? nil : NSNull())
+    }
+    
     //MARK: dict
     mutating public func encode<T: Encodable>(_ value: [String: T], key: String) {
         self[key] = value.encode()
     }
     
     mutating public func encode<T: Encodable>(_ value: [String: T]?, key: String, skipIfNil: Bool = false) {
+        self[key] = value.flatMap { $0.encode() } ?? (skipIfNil ? nil : NSNull())
+    }
+    
+    mutating public func encode<T: Encodable>(_ value: [String: T?], key: String) {
+        self[key] = value.encode()
+    }
+    
+    mutating public func encode<T: Encodable>(_ value: [String: T?]?, key: String, skipIfNil: Bool = false) {
         self[key] = value.flatMap { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
@@ -48,11 +64,35 @@ extension Dictionary where Key == String, Value == Any {
     mutating public func encode<T: Encodable & Hashable>(_ value: Set<T>?, key: String, skipIfNil: Bool = false) {
         self[key] = value.flatMap { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
+    
+    public mutating func encode(_ encoder: Encoder) {
+        encoder.forEach { updateValue($1, forKey: $0) }
+    }
+    
+    public mutating func encode(_ encoder: Encoder, key: String) {
+        self[key] = encoder
+    }
+}
+
+public protocol Optionable {
+    associatedtype Wrapped
+    func map<U>(_ transform: (Wrapped) throws -> U) rethrows -> U?
+}
+
+extension Optional: Optionable  {
+    
 }
 
 extension Array where Element: Encodable {
     public func encode() -> Any {
         return map { $0.encode() }
+    }
+}
+
+
+extension Array where Element: Optionable, Element.Wrapped: Encodable {
+    public func encode() -> Any {
+        return map { $0.map { $0.encode() } ?? NSNull() }
     }
 }
 
@@ -62,21 +102,15 @@ extension Dictionary where Key == String, Value: Encodable {
     }
 }
 
+extension Dictionary where Key == String, Value: Optionable, Value.Wrapped: Encodable {
+    public func encode() -> Any {
+        return map { $0.1.map { $0.encode() } ?? NSNull() }
+    }
+}
+
 extension Set where Element: Encodable {
     public func encode() -> Any {
         return map { $0.encode() }
     }
 }
 
-//extension Dictionary {
-//    
-//    public mutating func merge(with dictionary: Dictionary) {
-//        dictionary.forEach { updateValue($1, forKey: $0) }
-//    }
-//    
-//    public func merged(with dictionary: Dictionary) -> Dictionary {
-//        var dict = self
-//        dict.merge(with: dictionary)
-//        return dict
-//    }
-//}
