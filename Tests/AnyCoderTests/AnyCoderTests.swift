@@ -6,12 +6,6 @@
 import XCTest
 import AnyCoder
 
-#if os(macOS)
-    public typealias Color = NSColor
-#else
-    public typealias Color = UIColor
-#endif
-
 class AnyCoderTests: XCTestCase {
     
     enum TestStringEnum: String, AnyEncodable, AnyDecodable {
@@ -640,8 +634,8 @@ extension Recording: Decodable {
     public init?(decoder: Decoder) throws {
         startTsStr = try decoder.decode(key: "StartTs")
         recordId = try decoder.decode(key: "RecordId")
-        status = try decoder.decode(key: "Status", defaultValue: .Unknown)
-        recGroup = try decoder.decode(key: "RecGroup", defaultValue: .Unknown)
+        status = (try? decoder.decode(key: "Status")) ?? .Unknown
+        recGroup = (try? decoder.decode(key: "RecGroup")) ?? .Unknown
     }
 }
 
