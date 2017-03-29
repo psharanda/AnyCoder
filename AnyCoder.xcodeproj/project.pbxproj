@@ -147,6 +147,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1BEB5C061E8B9DA2004DD635 /* Test File */ = {
+			isa = PBXGroup;
+			children = (
+				1BEB5C021E8B9A91004DD635 /* Large.json */,
+			);
+			name = "Test File";
+			sourceTree = "<group>";
+		};
 		52D6D9721BEFF229002C0205 = {
 			isa = PBXGroup;
 			children = (
@@ -158,7 +166,7 @@
 				1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */,
 				1BEB5BE41E8AF46D004DD635 /* UIColor+AnyCoder.swift */,
 				52D6D9971BEFF375002C0205 /* AnyCoderTests.swift */,
-				1BEB5C021E8B9A91004DD635 /* Large.json */,
+				1BEB5C061E8B9DA2004DD635 /* Test File */,
 				52D6D99C1BEFF38C002C0205 /* Configs */,
 				52D6D97D1BEFF229002C0205 /* Products */,
 			);

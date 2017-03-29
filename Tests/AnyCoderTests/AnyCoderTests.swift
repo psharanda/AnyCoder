@@ -37,7 +37,7 @@ class AnyCoderTests: XCTestCase {
         func encode() -> Any {
             var encoder = Encoder()
             encoder.encode(name, key: "name")
-            return encoder.dictionary
+            return encoder
         }
     }
     
@@ -68,8 +68,6 @@ class AnyCoderTests: XCTestCase {
         let optionalChildArray: [TestChild]?
         let normalChildDictionary: [String: TestChild]
         let optionalChildDictionary: [String: TestChild]?
-        let normalChildDictionaryArray: [String: [TestChild]]
-        let optionalChildDictionaryArray: [String: [TestChild]]?
         
         init?(decoder: Decoder) throws {
             normalInt = try decoder.decode(key: "normalInt")
@@ -98,8 +96,6 @@ class AnyCoderTests: XCTestCase {
             optionalChildArray = try decoder.decode(key: "optionalChildArray")
             normalChildDictionary = try decoder.decode(key: "normalChildDictionary")
             optionalChildDictionary = try decoder.decode(key: "optionalChildDictionary")
-            normalChildDictionaryArray = try decoder.decode(key: "normalChildDictionaryArray")
-            optionalChildDictionaryArray = try decoder.decode(key: "optionalChildDictionaryArray")
         }
         
         func encode() -> Any {
@@ -130,9 +126,7 @@ class AnyCoderTests: XCTestCase {
             encoder.encode(optionalChildArray, key: "optionalChildArray")
             encoder.encode(normalChildDictionary, key: "normalChildDictionary")
             encoder.encode(optionalChildDictionary, key: "optionalChildDictionary")
-            encoder.encode(normalChildDictionaryArray, key: "normalChildDictionaryArray")
-            encoder.encode(optionalChildDictionaryArray, key: "optionalChildDictionaryArray")
-            return encoder.dictionary
+            return encoder
         }
     }
     
@@ -176,12 +170,10 @@ class AnyCoderTests: XCTestCase {
             "normalChildArray":[["name": "John"], ["name": "Alexa"]],
             "optionalChildArray":NSNull(),
             "normalChildDictionary":["first": ["name": "John"], "second": ["name": "Alexa"]],
-            "optionalChildDictionary":NSNull(),
-            "normalChildDictionaryArray":["first": [["name": "John"], ["name": "Alexa"]], "second": [["name": "John"], ["name": "Alexa"]]],
-            "optionalChildDictionaryArray":NSNull()
+            "optionalChildDictionary":NSNull()
         ]
         
-        let testParent = try! Decoder(value: strictJSONWithNulls).decode() as TestParent
+        let testParent = try! strictJSONWithNulls.decode() as TestParent
         let testJson = testParent.encode()
         
         let testData = try! JSONSerialization.data(withJSONObject: testJson, options: [])
@@ -217,12 +209,10 @@ class AnyCoderTests: XCTestCase {
             "normalChildArray":[["name": "John"], ["name": "Alexa"]],
             "optionalChildArray":NSNull(),
             "normalChildDictionary":["first": ["name": "John"], "second": ["name": "Alexa"]],
-            "optionalChildDictionary":NSNull(),
-            "normalChildDictionaryArray":["first": [["name": "John"], ["name": "Alexa"]], "second": [["name": "John"], ["name": "Alexa"]]],
-            "optionalChildDictionaryArray":NSNull()
+            "optionalChildDictionary":NSNull()
         ]
         
-        let testParent = try! Decoder(value: strictJSONWithNulls).decode() as TestParent
+        let testParent = try! strictJSONWithNulls.decode() as TestParent
         let testJson = testParent.encode()
         
         let testData = try! JSONSerialization.data(withJSONObject: testJson, options: [])
@@ -258,13 +248,11 @@ class AnyCoderTests: XCTestCase {
             "normalChildArray":[["name": "John"], ["name": "Alexa"]],
             "optionalChildArray":[["name": "John"], ["name": "Alexa"]],
             "normalChildDictionary":["first": ["name": "John"], "second": ["name": "Alexa"]],
-            "optionalChildDictionary":["first": ["name": "John"], "second": ["name": "Alexa"]],
-            "normalChildDictionaryArray":["first": [["name": "John"], ["name": "Alexa"]], "second": [["name": "John"], ["name": "Alexa"]]],
-            "optionalChildDictionaryArray":["first": [["name": "John"], ["name": "Alexa"]], "second": [["name": "John"], ["name": "Alexa"]]]
+            "optionalChildDictionary":["first": ["name": "John"], "second": ["name": "Alexa"]]
         ]
         
         do {
-            let testParent = try Decoder(value: strictJSONWithNulls).decode() as TestParent
+            let testParent = try strictJSONWithNulls.decode() as TestParent
             let testJson = testParent.encode()
             
             let testData = try JSONSerialization.data(withJSONObject: testJson, options: [])
@@ -281,7 +269,7 @@ class AnyCoderTests: XCTestCase {
         
         let json: [String: Any] = ["nme": "John"]
         do {
-            _ = try Decoder(value: json).decode() as TestChild
+            _ = try json.decode() as TestChild
             
             XCTFail("Should have thrown")
         }
@@ -301,7 +289,7 @@ class AnyCoderTests: XCTestCase {
         
         let json: [String: Any] = ["name": 123]
         do {
-            _ = try Decoder(value: json).decode() as TestChild
+            _ = try json.decode() as TestChild
             
             XCTFail("Should have thrown")
         }
@@ -327,9 +315,9 @@ class AnyCoderTests: XCTestCase {
             }
         }
         
-        let json: Any = ["color": "sfsfsdfsdf"]
+        let json: [String: Any] = ["color": "sfsfsdfsdf"]
         do {
-            _ = try Decoder(value: json).decode() as TestColor
+            _ = try json.decode() as TestColor
             
             XCTFail("Should have thrown")
         }
@@ -360,9 +348,9 @@ class AnyCoderTests: XCTestCase {
             }
         }
         
-        let json: Any = ["e": "1"]
+        let json: [String: Any] = ["e": "1"]
         do {
-            _ = try Decoder(value: json).decode() as TestObject
+            _ = try json.decode() as TestObject
             
             XCTFail("Should have thrown")
         }
@@ -390,9 +378,9 @@ class AnyCoderTests: XCTestCase {
             }
         }
         
-        let json: Any = ["color": NSNull()]
+        let json: [String: Any] = ["color": NSNull()]
         do {
-            _ = try Decoder(value: json).decode() as TestColor
+            _ = try json.decode() as TestColor
         }
         catch {
             XCTFail("Should haven't thrown")
@@ -405,21 +393,19 @@ class AnyCoderTests: XCTestCase {
             let name: String?
             let names: [String]?
             let naming: [String:String]?
-            let namingnames: [String:[String]]?
             
             init(decoder: Decoder) throws {
                 name = try decoder.decode(key: "name", nilIfMissing: true)
                 names = try decoder.decode(key: "names", nilIfMissing: true)
                 naming = try decoder.decode(key: "naming", nilIfMissing: true)
-                namingnames = try decoder.decode(key: "namingnames", nilIfMissing: true)
             }
         }
         
-        let json: Any = [:]
+        let json: [String: Any] = [:]
         
         
         do {
-            let t = try Decoder(value: json).decode() as Test
+            let t = try json.decode() as Test
             XCTAssertEqual(nil, t.name)
         }
         catch {
@@ -445,11 +431,11 @@ class AnyCoderTests: XCTestCase {
             }
         }
         
-        let json: Any = ["name":"John"]
+        let json: [String: Any] = ["name":"John"]
         
         
         do {
-            let t = try Decoder(value: json).decode() as Test
+            let t = try json.decode() as Test
             XCTAssertEqual("John", t.innerTest.name)
         }
         catch {
@@ -467,11 +453,11 @@ class AnyCoderTests: XCTestCase {
             }
         }
         
-        let json: Any = [["name":"John"], ["name":"Alex"], ["name":"John"]]
+        let json: [Any] = [["name":"John"], ["name":"Alex"], ["name":"John"]]
         
         
         do {
-            let t = try Decoder(value: json).decode() as Test
+            let t = try json.decode() as Test
             XCTAssertEqual(Set(["John", "Alex"]), Set(t.set.map { $0.name }))
         }
         catch {
@@ -487,7 +473,7 @@ class AnyCoderTests: XCTestCase {
             func encode() -> Any {
                 var encoder = Encoder()
                 encoder.encode(name, key: "name")
-                return encoder.dictionary
+                return encoder
             }
         }
         
@@ -509,7 +495,7 @@ class AnyCoderTests: XCTestCase {
             func encode() -> Any {
                 var encoder = Encoder()
                 encoder.encode(name, key: "name", skipIfNil: true)
-                return encoder.dictionary
+                return encoder
             }
         }
         
@@ -549,7 +535,7 @@ class AnyCoderTests: XCTestCase {
             }
         }
         
-        let json: Any = ["b": [
+        let json: [String: Any] = ["b": [
             "c": [ ["d":"1"],
                    ["d":"2"],
                    ["d":"3"],
@@ -559,7 +545,7 @@ class AnyCoderTests: XCTestCase {
         ]
         
         do {
-            _ = try Decoder(value: json).decode() as A
+            _ = try json.decode() as A
             
             XCTFail("Should have thrown")
         }
@@ -582,7 +568,7 @@ class AnyCoderTests: XCTestCase {
         let dict = try! JSONSerialization.jsonObject(with: self.data, options: [])
         
         self.measure {
-            let programs:[Program] = try! Decoder(value: dict).decoder(forKey: "ProgramList").decoder(forKey: "Programs").decode()
+            let programs:[Program] = try! AnyDecoder(value: dict).decoder(forKey: "ProgramList").decoder(forKey: "Programs").decode()
             XCTAssert(programs.count > 1000)
         }
     }
