@@ -151,9 +151,9 @@ extension Decoder {
     
     //MARK:- decode self as map
     public func decode<T: Decodable>() throws -> [String: T] {
-        return try asDictionary().map { el in
-            return try handleAction(path: .key(el.0)) {
-                return try decoder(withValue: el.1).decode()
+        return try asDictionary().map { (key, value) in
+            return try handleAction(path: .key(key)) {
+                return try decoder(withValue: value).decode()
             }
         }
     }
@@ -165,9 +165,9 @@ extension Decoder {
     }
     
     public func decode<T: Decodable>() throws -> [String: T?] {
-        return try asDictionary().map { el in
-            return try handleAction(path: .key(el.0)) {
-                return try decoder(withValue: el.1).decode()
+        return try asDictionary().map { (key, value) in
+            return try handleAction(path: .key(key)) {
+                return try decoder(withValue: value).decode()
             }
         }
     }

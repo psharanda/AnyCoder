@@ -5,86 +5,52 @@
 
 #if os(macOS)
     import AppKit
-    
-    //MARK:- UIColor as decodable
-    extension Decodable where Self: NSColor {
-        public init?(decoder: Decoder) throws {
-            self.init(hexString: try decoder.decode())
-        }
-    }
-    
-    extension NSColor: Decodable {}
-    
-    //MARK:- UIColor
-    
-    extension NSColor: Encodable {
-        public func encode() -> Any {
-            return asHexString
-        }
-    }
-    
-    
-    extension NSColor {
-        convenience init?(hexString: String) {
-            if let argb = argbFromString(hexString) {
-                self.init(red: CGFloat(argb.r) / 255, green: CGFloat(argb.g) / 255, blue: CGFloat(argb.b) / 255, alpha: CGFloat(argb.a) / 255)
-            } else {
-                return nil
-            }
-        }
-        
-        var asHexString: String {
-            var r: CGFloat = 0
-            var g: CGFloat = 0
-            var b: CGFloat = 0
-            var a: CGFloat = 0
-            self.getRed(&r, green: &g, blue: &b, alpha: &a)
-            
-            return argbToString(a: a, r: r, g: g, b: b)
-        }
-    }
-    
 #else
     import UIKit
-    
-    //MARK:- UIColor as decodable
-    extension Decodable where Self: UIColor {
-        public init?(decoder: Decoder) throws {
-            self.init(hexString: try decoder.decode())
-        }
-    }
-    
-    extension UIColor: Decodable {}
-    
-    //MARK:- UIColor
-    
-    extension UIColor: Encodable {
-        public func encode() -> Any {
-            return asHexString
-        }
-    }
-    
-    
-    extension UIColor {
-        convenience init?(hexString: String) {
-            if let argb = argbFromString(hexString) {
-                self.init(red: CGFloat(argb.r) / 255, green: CGFloat(argb.g) / 255, blue: CGFloat(argb.b) / 255, alpha: CGFloat(argb.a) / 255)
-            } else {
-                return nil
-            }
-        }
-        
-        var asHexString: String {
-            var r: CGFloat = 0
-            var g: CGFloat = 0
-            var b: CGFloat = 0
-            var a: CGFloat = 0
-            self.getRed(&r, green: &g, blue: &b, alpha: &a)
-            
-            return argbToString(a: a, r: r, g: g, b: b)
-        }
-    }
 #endif
+
+#if os(macOS)
+    public typealias Color = NSColor
+#else
+    public typealias Color = UIColor
+#endif
+
+//MARK:- UIColor as decodable
+extension Decodable where Self: Color {
+    public init?(decoder: Decoder) throws {
+        self.init(hexString: try decoder.decode())
+    }
+}
+
+extension Color: Decodable {}
+
+//MARK:- UIColor
+
+extension Color: Encodable {
+    public func encode() -> Any {
+        return asHexString
+    }
+}
+
+extension Color {
+    convenience init?(hexString: String) {
+        if let argb = argbFromString(hexString) {
+            self.init(red: CGFloat(argb.r) / 255, green: CGFloat(argb.g) / 255, blue: CGFloat(argb.b) / 255, alpha: CGFloat(argb.a) / 255)
+        } else {
+            return nil
+        }
+    }
+    
+    var asHexString: String {
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        self.getRed(&r, green: &g, blue: &b, alpha: &a)
+        
+        return argbToString(a: a, r: r, g: g, b: b)
+    }
+}
 
 func argbFromString(_ hexString: String) -> (a: UInt32, r: UInt32, g: UInt32, b: UInt32)? {
     let hex = hexString.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)

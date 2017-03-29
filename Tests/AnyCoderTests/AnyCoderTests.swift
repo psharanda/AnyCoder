@@ -614,10 +614,6 @@ public struct Recording {
         case Unknown
     }
     
-    
-    // Date parsing is slow. Remove dates to better measure performance.
-    //    let startTs:NSDate?
-    //    let endTs:NSDate?
     let startTsStr:String
     let status:Status
     let recordId:String
@@ -628,9 +624,6 @@ public struct Program {
     
     let title:String
     let chanId:String
-    // Date parsing is slow. Remove dates to better measure performance.
-    //    let startTime:NSDate
-    //    let endTime:NSDate
     let description:String?
     let subtitle:String?
     let recording:Recording

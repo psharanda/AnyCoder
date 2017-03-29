@@ -25,8 +25,7 @@ extension Bool : ScalarDecodable {}
 //MARK:- NSURL as decodable
 extension URL: Decodable {
     public init?(decoder: Decoder) throws {
-        let string: String = try decoder.decode()
-        self.init(string: string)
+        self.init(string: try decoder.decode())
     }
 }
 

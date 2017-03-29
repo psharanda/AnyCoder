@@ -155,17 +155,49 @@
 			name = "Test File";
 			sourceTree = "<group>";
 		};
-		52D6D9721BEFF229002C0205 = {
+		1BEB5C071E8BB279004DD635 /* Decoder */ = {
 			isa = PBXGroup;
 			children = (
 				1BEB5BDE1E8AF46D004DD635 /* Decoder.swift */,
-				1BEB5BDF1E8AF46D004DD635 /* Encoder.swift */,
 				1BEB5BE01E8AF46D004DD635 /* DecoderError.swift */,
 				1BEB5BE11E8AF46D004DD635 /* Decodables.swift */,
+			);
+			name = Decoder;
+			sourceTree = "<group>";
+		};
+		1BEB5C081E8BB318004DD635 /* Encoder */ = {
+			isa = PBXGroup;
+			children = (
+				1BEB5BDF1E8AF46D004DD635 /* Encoder.swift */,
 				1BEB5BE21E8AF46D004DD635 /* Encodables.swift */,
-				1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */,
+			);
+			name = Encoder;
+			sourceTree = "<group>";
+		};
+		1BEB5C091E8BB346004DD635 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
 				1BEB5BE41E8AF46D004DD635 /* UIColor+AnyCoder.swift */,
+				1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
+		1BEB5C0A1E8BB34F004DD635 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
 				52D6D9971BEFF375002C0205 /* AnyCoderTests.swift */,
+			);
+			name = Tests;
+			sourceTree = "<group>";
+		};
+		52D6D9721BEFF229002C0205 = {
+			isa = PBXGroup;
+			children = (
+				1BEB5C091E8BB346004DD635 /* Utils */,
+				1BEB5C071E8BB279004DD635 /* Decoder */,
+				1BEB5C081E8BB318004DD635 /* Encoder */,
+				1BEB5C0A1E8BB34F004DD635 /* Tests */,
 				1BEB5C061E8B9DA2004DD635 /* Test File */,
 				52D6D99C1BEFF38C002C0205 /* Configs */,
 				52D6D97D1BEFF229002C0205 /* Products */,
