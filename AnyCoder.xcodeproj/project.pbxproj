@@ -35,6 +35,9 @@
 		1BEB5BFE1E8AF4BA004DD635 /* Encodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE21E8AF46D004DD635 /* Encodables.swift */; };
 		1BEB5BFF1E8AF4BA004DD635 /* Dictionary+Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */; };
 		1BEB5C001E8AF4BA004DD635 /* UIColor+AnyCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE41E8AF46D004DD635 /* UIColor+AnyCoder.swift */; };
+		1BEB5C031E8B9A91004DD635 /* Large.json in Resources */ = {isa = PBXBuildFile; fileRef = 1BEB5C021E8B9A91004DD635 /* Large.json */; };
+		1BEB5C041E8B9A91004DD635 /* Large.json in Resources */ = {isa = PBXBuildFile; fileRef = 1BEB5C021E8B9A91004DD635 /* Large.json */; };
+		1BEB5C051E8B9A91004DD635 /* Large.json in Resources */ = {isa = PBXBuildFile; fileRef = 1BEB5C021E8B9A91004DD635 /* Large.json */; };
 		52D6D9871BEFF229002C0205 /* AnyCoder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D97C1BEFF229002C0205 /* AnyCoder.framework */; };
 		52D6D99B1BEFF375002C0205 /* AnyCoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D9971BEFF375002C0205 /* AnyCoderTests.swift */; };
 		DD7502861C68FDDC006590AF /* AnyCoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D6D9971BEFF375002C0205 /* AnyCoderTests.swift */; };
@@ -75,6 +78,7 @@
 		1BEB5BE21E8AF46D004DD635 /* Encodables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Encodables.swift; path = Sources/Encodables.swift; sourceTree = "<group>"; };
 		1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Dictionary+Map.swift"; path = "Sources/Dictionary+Map.swift"; sourceTree = "<group>"; };
 		1BEB5BE41E8AF46D004DD635 /* UIColor+AnyCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIColor+AnyCoder.swift"; path = "Sources/UIColor+AnyCoder.swift"; sourceTree = "<group>"; };
+		1BEB5C021E8B9A91004DD635 /* Large.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Large.json; sourceTree = "<group>"; };
 		52D6D97C1BEFF229002C0205 /* AnyCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AnyCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9861BEFF229002C0205 /* AnyCoder-iOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AnyCoder-iOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9971BEFF375002C0205 /* AnyCoderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AnyCoderTests.swift; path = Tests/AnyCoderTests/AnyCoderTests.swift; sourceTree = "<group>"; };
@@ -154,6 +158,7 @@
 				1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */,
 				1BEB5BE41E8AF46D004DD635 /* UIColor+AnyCoder.swift */,
 				52D6D9971BEFF375002C0205 /* AnyCoderTests.swift */,
+				1BEB5C021E8B9A91004DD635 /* Large.json */,
 				52D6D99C1BEFF38C002C0205 /* Configs */,
 				52D6D97D1BEFF229002C0205 /* Products */,
 			);
@@ -433,6 +438,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1BEB5C031E8B9A91004DD635 /* Large.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,6 +467,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1BEB5C041E8B9A91004DD635 /* Large.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,6 +475,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1BEB5C051E8B9A91004DD635 /* Large.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -577,6 +577,22 @@ class AnyCoderTests: XCTestCase {
         }
     }
     
+    func testPerformance() {
+        
+        let dict = try! JSONSerialization.jsonObject(with: self.data, options: [])
+        
+        self.measure {
+            let programs:[Program] = try! Decoder(value: dict).decoder(forKey: "ProgramList").decoder(forKey: "Programs").decode()
+            XCTAssert(programs.count > 1000)
+        }
+    }
+    
+    private lazy var data:Data = {
+        let path = Bundle(for: type(of: self)).url(forResource: "Large", withExtension: "json")
+        let data = try! Data(contentsOf: path!)
+        return data
+    }()
+    
 }
 
 struct TestHash: Decodable, Hashable {
@@ -594,6 +610,69 @@ struct TestHash: Decodable, Hashable {
 extension TestHash {
     static func ==(lhs: TestHash, rhs: TestHash) -> Bool {
         return lhs.name == rhs.name
+    }
+}
+
+public struct Recording {
+    enum Status: String, Decodable {
+        case None = "0"
+        case Recorded = "-3"
+        case Recording = "-2"
+        case Unknown
+    }
+    
+    enum RecGroup: String, Decodable {
+        case Deleted = "Deleted"
+        case Default = "Default"
+        case LiveTV = "LiveTV"
+        case Unknown
+    }
+    
+    
+    // Date parsing is slow. Remove dates to better measure performance.
+    //    let startTs:NSDate?
+    //    let endTs:NSDate?
+    let startTsStr:String
+    let status:Status
+    let recordId:String
+    let recGroup:RecGroup
+}
+
+public struct Program {
+    
+    let title:String
+    let chanId:String
+    // Date parsing is slow. Remove dates to better measure performance.
+    //    let startTime:NSDate
+    //    let endTime:NSDate
+    let description:String?
+    let subtitle:String?
+    let recording:Recording
+    let season:Int?
+    let episode:Int?
+}
+
+extension Recording: Decodable {
+    
+    public init?(decoder: Decoder) throws {
+        startTsStr = try decoder.decode(key: "StartTs")
+        recordId = try decoder.decode(key: "RecordId")
+        status = (try? decoder.decode(key: "Status")) ?? .Unknown
+        recGroup = (try? decoder.decode(key: "RecGroup")) ?? .Unknown
+    }
+}
+
+extension Program: Decodable {
+    
+    public init?(decoder: Decoder) throws {
+        title = try decoder.decode(key: "Title")
+        chanId = try decoder.decoder(forKey: "Channel").decode(key: "ChanId")
+        description = try? decoder.decode(key: "Description")
+        subtitle = try? decoder.decode(key: "SubTitle")
+        recording = try decoder.decode(key: "Recording")
+        season = try? decoder.decode(key: "Season")
+        episode = try? decoder.decode(key: "Episode")
+        
     }
 }
 
