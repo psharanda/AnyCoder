@@ -16,7 +16,7 @@ public enum DecoderErrorType {
     case invalidType(Any.Type, Any)
     case failed(Any.Type, Any)
     
-    var error: DecoderError  {
+    public var error: DecoderError  {
         return DecoderError(errorType: self, path: [])
     }
 }
@@ -30,7 +30,7 @@ public struct DecoderError: Error {
     public let errorType: DecoderErrorType
     public let path: [DecoderErrorPathComponent]
     
-    func backtraceError(path: DecoderErrorPathComponent) -> DecoderError {
+    public func backtraceError(path: DecoderErrorPathComponent) -> DecoderError {
         return DecoderError(errorType: errorType, path: [path] + self.path)
     }
     
