@@ -9,7 +9,7 @@ public protocol Encodable {
     func encode() -> Any
 }
 
-public final class Encoder {
+public struct Encoder {
     private var _dictionary: [String: Any] = [:]
     
     public init() { }
@@ -19,47 +19,47 @@ public final class Encoder {
     }
     
     //MARK: value
-    public func encode<T: Encodable>(_ value: T, key: String) {
+    mutating public func encode<T: Encodable>(_ value: T, key: String) {
         _dictionary[key] = Encoder.encode(value)
     }
     
-    public func encode<T: Encodable>(_ value: T?, key: String, skipIfNil: Bool = false) {
+    mutating public func encode<T: Encodable>(_ value: T?, key: String, skipIfNil: Bool = false) {
         _dictionary[key] = Encoder.encode(value, skipIfNil: skipIfNil)
     }
     
     //MARK: array
-    public func encode<T: Encodable>(_ value: [T], key: String) {
+    mutating public func encode<T: Encodable>(_ value: [T], key: String) {
         _dictionary[key] = Encoder.encode(value)
     }
     
-    public func encode<T: Encodable>(_ value: [T]?, key: String, skipIfNil: Bool = false) {
+    mutating public func encode<T: Encodable>(_ value: [T]?, key: String, skipIfNil: Bool = false) {
         _dictionary[key] = Encoder.encode(value, skipIfNil: skipIfNil)
     }
     
     //MARK: dict
-    public func encode<T: Encodable>(_ value: [String: T], key: String) {
+    mutating public func encode<T: Encodable>(_ value: [String: T], key: String) {
         _dictionary[key] = Encoder.encode(value)
     }
     
-    public func encode<T: Encodable>(_ value: [String: T]?, key: String, skipIfNil: Bool = false) {
+    mutating public func encode<T: Encodable>(_ value: [String: T]?, key: String, skipIfNil: Bool = false) {
         _dictionary[key] = Encoder.encode(value, skipIfNil: skipIfNil)
     }
     
     //MARK: dict of arrays
-    public func encode<T: Encodable>(_ value: [String: [T]], key: String) {
+    mutating public func encode<T: Encodable>(_ value: [String: [T]], key: String) {
         _dictionary[key] = Encoder.encode(value)
     }
     
-    public func encode<T: Encodable>(_ value: [String: [T]]?, key: String, skipIfNil: Bool = false) {
+    mutating public func encode<T: Encodable>(_ value: [String: [T]]?, key: String, skipIfNil: Bool = false) {
         _dictionary[key] = Encoder.encode(value, skipIfNil: skipIfNil)
     }
     
     //MARK: set
-    public func encode<T: Encodable & Hashable>(_ value: Set<T>, key: String) {
+    mutating public func encode<T: Encodable & Hashable>(_ value: Set<T>, key: String) {
         _dictionary[key] = Encoder.encode(value)
     }
     
-    public func encode<T: Encodable & Hashable>(_ value: Set<T>?, key: String, skipIfNil: Bool = false) {
+    mutating public func encode<T: Encodable & Hashable>(_ value: Set<T>?, key: String, skipIfNil: Bool = false) {
         _dictionary[key] = Encoder.encode(value, skipIfNil: skipIfNil)
     }
     
@@ -111,11 +111,13 @@ public final class Encoder {
     
     //inplace
     
-    public func encode(encoder: Encoder) {
-        _dictionary.merge(with: encoder.dictionary)
+    mutating public func merge(_ value: Any) {
+        if let dict = value as? [String: Any] {
+            _dictionary.merge(with: dict)
+        }
     }
     
-    public func encode(encoder: Encoder, key: String) {
-        _dictionary["key"] = encoder.dictionary
+    mutating public func include(_ value: Any, key: String) {
+        _dictionary["key"] = value
     }
 }

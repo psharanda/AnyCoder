@@ -35,7 +35,7 @@ class AnyCoderTests: XCTestCase {
         }
         
         func encode() -> Any {
-            let encoder = Encoder()
+            var encoder = Encoder()
             encoder.encode(name, key: "name")
             return encoder.dictionary
         }
@@ -103,7 +103,7 @@ class AnyCoderTests: XCTestCase {
         }
         
         func encode() -> Any {
-            let encoder = Encoder()
+            var encoder = Encoder()
             encoder.encode(normalInt, key: "normalInt")
             encoder.encode(optionalInt, key: "optionalInt")
             encoder.encode(normalFloat, key: "normalFloat")
@@ -285,28 +285,8 @@ class AnyCoderTests: XCTestCase {
             
             XCTFail("Should have thrown")
         }
-        catch (let error as DecoderError) {
+        catch (let error as DecoderErrorType) {
             if case .missing = error {
-                XCTAssert(true)
-            } else {
-                XCTFail("Unexpected error thrown: \(error)")
-            }
-        }
-        catch {
-            XCTFail("Unexpected error thrown: \(error)")
-        }
-    }
-        
-    func testNonNullableValueException() {
-        
-        let json: [String: Any] = ["name": NSNull()]
-        do {
-            _ = try Decoder(value: json).decode() as TestChild
-            
-            XCTFail("Should have thrown")
-        }
-        catch (let error as DecoderError) {
-            if case .nonnullable = error {
                 XCTAssert(true)
             } else {
                 XCTFail("Unexpected error thrown: \(error)")
@@ -325,7 +305,7 @@ class AnyCoderTests: XCTestCase {
             
             XCTFail("Should have thrown")
         }
-        catch (let error as DecoderError) {
+        catch (let error as DecoderErrorType) {
             if case .invalidType = error {
                 XCTAssert(true)
             } else {
@@ -353,8 +333,8 @@ class AnyCoderTests: XCTestCase {
             
             XCTFail("Should have thrown")
         }
-        catch (let error as DecoderError) {
-            if case .failed = error {
+        catch (let error as DecoderErrorType) {
+            if case .invalidValue = error {
                 XCTAssert(true)
             } else {
                 XCTFail("Unexpected error thrown: \(error)")
@@ -386,8 +366,8 @@ class AnyCoderTests: XCTestCase {
             
             XCTFail("Should have thrown")
         }
-        catch (let error as DecoderError) {
-            if case .failed = error {
+        catch (let error as DecoderErrorType) {
+            if case .invalidValue = error {
                 XCTAssert(true)
             } else {
                 XCTFail("Unexpected error thrown: \(error)")
@@ -505,7 +485,7 @@ class AnyCoderTests: XCTestCase {
             let name: String?
             
             func encode() -> Any {
-                let encoder = Encoder()
+                var encoder = Encoder()
                 encoder.encode(name, key: "name")
                 return encoder.dictionary
             }
@@ -527,7 +507,7 @@ class AnyCoderTests: XCTestCase {
             let name: String?
             
             func encode() -> Any {
-                let encoder = Encoder()
+                var encoder = Encoder()
                 encoder.encode(name, key: "name", skipIfNil: true)
                 return encoder.dictionary
             }

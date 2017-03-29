@@ -15,55 +15,25 @@ private enum DecodingResult<T> {
     case usingDecoder(Decoder)
 }
 
-public final class Decoder {
+
+public struct Decoder {
     
     public let value: Any
-    private let keyPath: [String]
 
-    private init(value: Any, keyPath: [String] = []) {
-        self.value = value
-        self.keyPath = keyPath
-    }
-    
     public init(value: Any) {
         self.value = value
-        self.keyPath = []
     }
     
-    //MARK:- cast cache
-    
-    private var dictionary: [String: Any]?
-    private var array: [Any]?
-    private var dictionaryOfArrays: [String: [Any]]?
-    
     private func asDictionary() throws -> [String: Any] {
-        if let dictionary = dictionary {
-            return dictionary
-        } else {
-            let dictionary = try extractValue() as [String: Any]
-            self.dictionary = dictionary
-            return dictionary
-        }
+        return try extractValue() as [String: Any]
     }
     
     private func asArray() throws -> [Any] {
-        if let array = array {
-            return array
-        } else {
-            let array = try extractValue() as [Any]
-            self.array = array
-            return array
-        }
+        return try extractValue() as [Any]
     }
     
     private func asDictionaryOfArrays() throws -> [String: [Any]] {
-        if let dictionaryOfArrays = dictionaryOfArrays {
-            return dictionaryOfArrays
-        } else {
-            let dictionaryOfArrays = try extractValue() as [String: [Any]]
-            self.dictionaryOfArrays = dictionaryOfArrays
-            return dictionaryOfArrays
-        }
+        return try extractValue() as [String: [Any]]
     }
     
     //MARK:- utils
@@ -72,16 +42,16 @@ public final class Decoder {
         if let value = value as? T {
             return value
         } else {
-            throw DecoderError.invalidType(keyPath: keyPath, type: T.self, value: value)
+            throw DecoderErrorType.invalidType(value)
         }
     }
     
     public func decoder(forKey key: String) throws -> Decoder {
         
         guard let value = try asDictionary()[key] else {
-            throw DecoderError.missing(keyPath: keyPath + [key])
+            throw DecoderErrorType.missing
         }
-        return Decoder(value: value, keyPath: keyPath + [key])
+        return Decoder(value: value)
     }
     
     public func decoder(forKey key: String, nilIfMissing: Bool = false) throws -> Decoder? {
@@ -90,16 +60,16 @@ public final class Decoder {
             if nilIfMissing {
                 return nil
             }
-            throw DecoderError.missing(keyPath: keyPath + [key])
+            throw DecoderErrorType.missing
         }
-        return Decoder(value: value, keyPath: keyPath + [key])
+        return Decoder(value: value)
     }
     
     private func decodingResultForKey<T>(_ key: String, defaultValue: T) throws -> DecodingResult<T> {
         guard let value = try asDictionary()[key] else {
             return .usingDefaultValue(defaultValue)
         }
-        return .usingDecoder(Decoder(value: value, keyPath: keyPath + [key]))
+        return .usingDecoder(Decoder(value: value))
     }
     
     
@@ -108,31 +78,31 @@ public final class Decoder {
         if let value = try T.init(decoder: self) {
             return value
         } else {
-            throw DecoderError.failed(keyPath: keyPath, type: T.self, value: value)
+            throw DecoderErrorType.invalidValue(value)
         }
+    }
+    
+    private func decodeSelf<T: Decodable>() throws -> T? {
+        return try T.init(decoder: self)
     }
     
     private func doAndThrowIfNullWasFound<T>(action: () throws ->T) throws -> T {
         do {
             return try action()
         }
-        catch (let error as DecoderError) {
-            if value is NSNull {
-                throw DecoderError.nonnullable(keyPath: keyPath)
-            } else {
-                throw error
-            }
+        catch (let error as DecoderErrorType) {
+            throw error
         }
         catch {
             throw error
         }
     }
     
-    private func doAndReturnNilIfNullWasFound<T>(action: () throws ->T) throws -> T? {
+    private func doAndReturnNilIfNullWasFound<T>(action: () throws ->T?) throws -> T? {
         do {
             return try action()
         }
-        catch (let error as DecoderError) {
+        catch (let error as DecoderErrorType) {
             if value is NSNull {
                 return nil
             } else {
@@ -159,13 +129,13 @@ public final class Decoder {
     //MARK:- decode self as array
     public func decode<T: Decodable>() throws -> [T] {
         return try doAndThrowIfNullWasFound {
-            try asArray().map { try Decoder(value: $0, keyPath: keyPath).decode() }
+            try asArray().map { try Decoder(value: $0).decode() }
         }
     }
     
     public func decode<T: Decodable>() throws -> [T]? {
         return try doAndReturnNilIfNullWasFound {
-            try asArray().map { try Decoder(value: $0, keyPath: keyPath).decode() }
+            try asArray().map { try Decoder(value: $0).decode() }
         }
         
     }
@@ -173,39 +143,39 @@ public final class Decoder {
     //MARK:- decode self as map
     public func decode<T: Decodable>() throws -> [String: T] {
         return try doAndThrowIfNullWasFound {
-            try asDictionary().map { try Decoder(value: $0, keyPath: keyPath).decode() }
+            try asDictionary().map { try Decoder(value: $0).decode() }
         }
     }
     
     public func decode<T: Decodable>() throws -> [String: T]? {
         return try doAndReturnNilIfNullWasFound {
-            try asDictionary().map { try Decoder(value: $0, keyPath: keyPath).decode() }
+            try asDictionary().map { try Decoder(value: $0).decode() }
         }
     }
     
     //MARK:- decode self as map of arrays
     public func decode<T: Decodable>() throws -> [String: [T]] {
         return try doAndThrowIfNullWasFound {
-            return try asDictionaryOfArrays().map { try Decoder(value: $0 as Any, keyPath: keyPath).decode() }
+            return try asDictionaryOfArrays().map { try Decoder(value: $0).decode() }
         }
     }
     
     public func decode<T: Decodable>() throws -> [String: [T]]? {
         return try doAndReturnNilIfNullWasFound {
-            try asDictionaryOfArrays().map { try Decoder(value: $0 as Any, keyPath: keyPath).decode() }
+            try asDictionaryOfArrays().map { try Decoder(value: $0).decode() }
         }
     }
     
     //MARK:- decode self as set
     public func decode<T: Decodable & Hashable>() throws -> Set<T> {
         return try doAndThrowIfNullWasFound {
-            return try Set(asArray().map { try Decoder(value: $0 as Any, keyPath: keyPath).decode() })
+            return try Set(asArray().map { try Decoder(value: $0).decode() })
         }
     }
     
     public func decode<T: Decodable & Hashable>() throws -> Set<T>? {
         return try doAndReturnNilIfNullWasFound {
-            return try Set(asArray().map { try Decoder(value: $0 as Any, keyPath: keyPath).decode() })
+            return try Set(asArray().map { try Decoder(value: $0).decode() })
         }
     }
     
@@ -344,5 +314,7 @@ public final class Decoder {
         }
     }
 }
+
+
 
 
