@@ -16,13 +16,18 @@
 #endif
 
 //MARK:- UIColor as decodable
-extension Decodable where Self: Color {
-    public init?(decoder: Decoder) throws {
-        self.init(hexString: try decoder.decode())
+extension AnyDecodable where Self: Color {
+
+    public init?(anyValue: Any) {
+        if let value = anyValue as? String {
+            self.init(hexString: value)
+        } else {
+            return nil
+        }
     }
 }
 
-extension Color: Decodable {}
+extension Color: AnyDecodable {}
 
 //MARK:- UIColor
 

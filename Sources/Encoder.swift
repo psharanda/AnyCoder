@@ -17,113 +17,91 @@ public protocol Encodable {
 
 extension Dictionary where Key == String, Value == Any {
     
+    public mutating func encode<T: Encodable>(_ value: T) {
+        value.encode().forEach { updateValue($1, forKey: $0) }
+    }
+    
     //MARK: value
-    mutating public func encode<T: Encodable>(_ value: T, key: String) {
+    public mutating func encode<T: Encodable>(_ value: T, key: String) {
         self[key] = value.encode()
     }
     
-    mutating public func encode<T: Encodable>(_ value: T?, key: String, skipIfNil: Bool = false) {
+    public mutating func encode<T: Encodable>(_ value: T?, key: String, skipIfNil: Bool = false) {
         self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
-    mutating public func encode<T: AnyEncodable>(_ value: T, key: String) {
+    public mutating func encode<T: AnyEncodable>(_ value: T, key: String) {
         self[key] = value.encode()
     }
     
-    mutating public func encode<T: AnyEncodable>(_ value: T?, key: String, skipIfNil: Bool = false) {
+    public mutating func encode<T: AnyEncodable>(_ value: T?, key: String, skipIfNil: Bool = false) {
         self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
     //MARK: array
-    mutating public func encode<T: Encodable>(_ value: [T], key: String) {
+    public mutating func encode<T: Encodable>(_ value: [T], key: String) {
         self[key] = value.encode()
     }
     
-    mutating public func encode<T: Encodable>(_ value: [T]?, key: String, skipIfNil: Bool = false) {
+    public mutating func encode<T: Encodable>(_ value: [T]?, key: String, skipIfNil: Bool = false) {
         self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
-    mutating public func encode<T: Encodable>(_ value: [T?], key: String) {
+    public mutating func encode<T: Encodable>(_ value: [T?], key: String) {
         self[key] = value.encode()
     }
     
-    mutating public func encode<T: Encodable>(_ value: [T?]?, key: String, skipIfNil: Bool = false) {
+    public mutating func encode<T: Encodable>(_ value: [T?]?, key: String, skipIfNil: Bool = false) {
         self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
-    mutating public func encode<T: AnyEncodable>(_ value: [T], key: String) {
+    public mutating func encode<T: AnyEncodable>(_ value: [T], key: String) {
         self[key] = value.encode()
     }
     
-    mutating public func encode<T: AnyEncodable>(_ value: [T]?, key: String, skipIfNil: Bool = false) {
+    public mutating func encode<T: AnyEncodable>(_ value: [T]?, key: String, skipIfNil: Bool = false) {
         self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
-    mutating public func encode<T: AnyEncodable>(_ value: [T?], key: String) {
+    public mutating func encode<T: AnyEncodable>(_ value: [T?], key: String) {
         self[key] = value.encode()
     }
     
-    mutating public func encode<T: AnyEncodable>(_ value: [T?]?, key: String, skipIfNil: Bool = false) {
+    public mutating func encode<T: AnyEncodable>(_ value: [T?]?, key: String, skipIfNil: Bool = false) {
         self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
     //MARK: dict
-    mutating public func encode<T: Encodable>(_ value: [String: T], key: String) {
+    public mutating func encode<T: Encodable>(_ value: [String: T], key: String) {
         self[key] = value.encode()
     }
     
-    mutating public func encode<T: Encodable>(_ value: [String: T]?, key: String, skipIfNil: Bool = false) {
+    public mutating func encode<T: Encodable>(_ value: [String: T]?, key: String, skipIfNil: Bool = false) {
         self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
-    mutating public func encode<T: Encodable>(_ value: [String: T?], key: String) {
+    public mutating func encode<T: Encodable>(_ value: [String: T?], key: String) {
         self[key] = value.encode()
     }
     
-    mutating public func encode<T: Encodable>(_ value: [String: T?]?, key: String, skipIfNil: Bool = false) {
+    public mutating func encode<T: Encodable>(_ value: [String: T?]?, key: String, skipIfNil: Bool = false) {
         self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
-    mutating public func encode<T: AnyEncodable>(_ value: [String: T], key: String) {
+    public mutating func encode<T: AnyEncodable>(_ value: [String: T], key: String) {
         self[key] = value.encode()
     }
     
-    mutating public func encode<T: AnyEncodable>(_ value: [String: T]?, key: String, skipIfNil: Bool = false) {
+    public mutating func encode<T: AnyEncodable>(_ value: [String: T]?, key: String, skipIfNil: Bool = false) {
         self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
     }
     
-    mutating public func encode<T: AnyEncodable>(_ value: [String: T?], key: String) {
+    public mutating func encode<T: AnyEncodable>(_ value: [String: T?], key: String) {
         self[key] = value.encode()
     }
     
-    mutating public func encode<T: AnyEncodable>(_ value: [String: T?]?, key: String, skipIfNil: Bool = false) {
+    public mutating func encode<T: AnyEncodable>(_ value: [String: T?]?, key: String, skipIfNil: Bool = false) {
         self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
-    }
-    
-    //MARK: set
-    mutating public func encode<T: Encodable & Hashable>(_ value: Set<T>, key: String) {
-        self[key] = value.encode()
-    }
-    
-    mutating public func encode<T: Encodable & Hashable>(_ value: Set<T>?, key: String, skipIfNil: Bool = false) {
-        self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
-    }
-    
-    mutating public func encode<T: AnyEncodable & Hashable>(_ value: Set<T>, key: String) {
-        self[key] = value.encode()
-    }
-    
-    mutating public func encode<T: AnyEncodable & Hashable>(_ value: Set<T>?, key: String, skipIfNil: Bool = false) {
-        self[key] = value.map { $0.encode() } ?? (skipIfNil ? nil : NSNull())
-    }
-    
-    //MARK: direct
-    public mutating func encode(_ encoder: Encoder) {
-        encoder.forEach { updateValue($1, forKey: $0) }
-    }
-    
-    public mutating func encode(_ encoder: Encoder, key: String) {
-        self[key] = encoder
     }
 }
 
@@ -161,7 +139,6 @@ extension Array where Element: Optionable, Element.Wrapped: AnyEncodable {
     }
 }
 
-
 extension Dictionary where Key == String, Value: Encodable {
     public func encode() -> [String: Any] {
         return map { $0.1.encode() }
@@ -183,18 +160,6 @@ extension Dictionary where Key == String, Value: Optionable, Value.Wrapped: Enco
 extension Dictionary where Key == String, Value: Optionable, Value.Wrapped: AnyEncodable {
     public func encode() -> [String: Any] {
         return map { $0.1.map { $0.encode() as Any } ?? NSNull() as Any }
-    }
-}
-
-extension Set where Element: Encodable {
-    public func encode() -> [Any] {
-        return map { $0.encode() }
-    }
-}
-
-extension Set where Element: AnyEncodable {
-    public func encode() -> [Any] {
-        return map { $0.encode() }
     }
 }
 

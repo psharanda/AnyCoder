@@ -14,13 +14,13 @@ import AnyCoder
 
 class AnyCoderTests: XCTestCase {
     
-    enum TestStringEnum: String, AnyEncodable, Decodable {
+    enum TestStringEnum: String, AnyEncodable, AnyDecodable {
         case first
         case second
         case third
     }
     
-    enum TestIntEnum: Int, AnyEncodable, Decodable {
+    enum TestIntEnum: Int, AnyEncodable, AnyDecodable {
         case first = 1
         case second = 2
         case third = 3
@@ -322,7 +322,7 @@ class AnyCoderTests: XCTestCase {
             XCTFail("Should have thrown")
         }
         catch (let error as DecoderError) {
-            if case .failed = error.errorType {
+            if case .invalidType = error.errorType {
                 XCTAssert(true)
             } else {
                 XCTFail("Unexpected error thrown: \(error)")
@@ -335,7 +335,7 @@ class AnyCoderTests: XCTestCase {
     
     func testFailedEnumException() {
         
-        enum TestEnum: String, Decodable {
+        enum TestEnum: String, AnyDecodable {
             case first
             case second
         }
@@ -355,7 +355,7 @@ class AnyCoderTests: XCTestCase {
             XCTFail("Should have thrown")
         }
         catch (let error as DecoderError) {
-            if case .failed = error.errorType {
+            if case .invalidType = error.errorType {
                 XCTAssert(true)
             } else {
                 XCTFail("Unexpected error thrown: \(error)")
@@ -445,11 +445,15 @@ class AnyCoderTests: XCTestCase {
     
     func testSet() {
         
-        struct Test: Decodable {
+        struct Test: AnyDecodable {
             let set: Set<TestHash>
             
-            init(decoder: Decoder) throws {
-                set = try decoder.decode()
+            init?(anyValue: Any) throws {
+                if let a = anyValue as? [Any] {
+                    set = try Set(a.decode() as [TestHash])
+                } else {
+                    return nil
+                }
             }
         }
         
@@ -457,7 +461,7 @@ class AnyCoderTests: XCTestCase {
         
         
         do {
-            let t = try json.decode() as Test
+            let t = try Test(anyValue: json)!
             XCTAssertEqual(Set(["John", "Alex"]), Set(t.set.map { $0.name }))
         }
         catch {
@@ -565,10 +569,10 @@ class AnyCoderTests: XCTestCase {
     
     func testPerformance() {
         
-        let dict = try! JSONSerialization.jsonObject(with: self.data, options: [])
+        let dict = try! JSONSerialization.jsonObject(with: self.data, options: []) as! [String: Any]
         
         self.measure {
-            let programs:[Program] = try! AnyDecoder(value: dict).decoder(forKey: "ProgramList").decoder(forKey: "Programs").decode()
+            let programs:[Program] = try! dict.decoder(forKey: "ProgramList").decode(key: "Programs")
             XCTAssert(programs.count > 1000)
         }
     }
@@ -600,14 +604,14 @@ extension TestHash {
 }
 
 public struct Recording {
-    enum Status: String, Decodable {
+    enum Status: String, AnyDecodable {
         case None = "0"
         case Recorded = "-3"
         case Recording = "-2"
         case Unknown
     }
     
-    enum RecGroup: String, Decodable {
+    enum RecGroup: String, AnyDecodable {
         case Deleted = "Deleted"
         case Default = "Default"
         case LiveTV = "LiveTV"
@@ -627,8 +631,8 @@ public struct Program {
     let description:String?
     let subtitle:String?
     let recording:Recording
-    let season:Int?
-    let episode:Int?
+    let season:String?
+    let episode:String?
 }
 
 extension Recording: Decodable {
@@ -636,8 +640,8 @@ extension Recording: Decodable {
     public init?(decoder: Decoder) throws {
         startTsStr = try decoder.decode(key: "StartTs")
         recordId = try decoder.decode(key: "RecordId")
-        status = (try? decoder.decode(key: "Status")) ?? .Unknown
-        recGroup = (try? decoder.decode(key: "RecGroup")) ?? .Unknown
+        status = try decoder.decode(key: "Status", defaultValue: .Unknown)
+        recGroup = try decoder.decode(key: "RecGroup", defaultValue: .Unknown)
     }
 }
 
@@ -646,11 +650,11 @@ extension Program: Decodable {
     public init?(decoder: Decoder) throws {
         title = try decoder.decode(key: "Title")
         chanId = try decoder.decoder(forKey: "Channel").decode(key: "ChanId")
-        description = try? decoder.decode(key: "Description")
-        subtitle = try? decoder.decode(key: "SubTitle")
+        description = try decoder.decode(key: "Description", nilIfMissing: true)
+        subtitle = try decoder.decode(key: "SubTitle", nilIfMissing: true)
         recording = try decoder.decode(key: "Recording")
-        season = try? decoder.decode(key: "Season")
-        episode = try? decoder.decode(key: "Episode")
+        season = try decoder.decode(key: "Season", nilIfMissing: true)
+        episode = try decoder.decode(key: "Episode", nilIfMissing: true)
         
     }
 }
