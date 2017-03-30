@@ -7,7 +7,7 @@ import Foundation
 import CoreGraphics
 
 //MARK:- ScalarEncodable
-public protocol ScalarEncodable: AnyEncodable {}
+public protocol ScalarEncodable: ValueEncodable {}
 
 extension ScalarEncodable {
     public func encode() -> Any {
@@ -17,13 +17,22 @@ extension ScalarEncodable {
 
 extension Double : ScalarEncodable {}
 extension Int : ScalarEncodable {}
-extension String : ScalarEncodable {}
+extension Int8 : ScalarEncodable {}
+extension Int16 : ScalarEncodable {}
+extension Int32 : ScalarEncodable {}
+extension Int64 : ScalarEncodable {}
+extension UInt : ScalarEncodable {}
+extension UInt8 : ScalarEncodable {}
+extension UInt16 : ScalarEncodable {}
+extension UInt32 : ScalarEncodable {}
+extension UInt64 : ScalarEncodable {}
 extension Float : ScalarEncodable {}
 extension CGFloat : ScalarEncodable {}
+extension String : ScalarEncodable {}
 extension Bool : ScalarEncodable {}
 
 //MARK:- NSURL
-extension URL: AnyEncodable {
+extension URL: ValueEncodable {
     public func encode() -> Any {        
         return absoluteString
     }
@@ -31,14 +40,14 @@ extension URL: AnyEncodable {
 
 //MARK:- RawRepresentable
 
-extension AnyEncodable where Self: RawRepresentable, Self.RawValue: AnyEncodable {
+extension ValueEncodable where Self: RawRepresentable, Self.RawValue: ValueEncodable {
     public func encode() -> Any {
         return self.rawValue.encode()
     }
 }
 
 //MARK:- NSDate as decodable
-extension Date: AnyEncodable {
+extension Date: ValueEncodable {
     public func encode() -> Any {
         return timeIntervalSince1970
     }

@@ -8,13 +8,13 @@ import AnyCoder
 
 class AnyCoderTests: XCTestCase {
     
-    enum TestStringEnum: String, AnyEncodable, AnyDecodable {
+    enum TestStringEnum: String, ValueEncodable, ValueDecodable {
         case first
         case second
         case third
     }
     
-    enum TestIntEnum: Int, AnyEncodable, AnyDecodable {
+    enum TestIntEnum: Int, ValueEncodable, ValueDecodable {
         case first = 1
         case second = 2
         case third = 3
@@ -77,7 +77,7 @@ class AnyCoderTests: XCTestCase {
         let optionalOptionalIntDictionary: [String: Int?]?
         
         
-        init?(decoder: Decoder) throws {
+        init(decoder: Decoder) throws {
             normalInt = try decoder.decode(key: "normalInt")
             optionalInt = try decoder.decode(key: "optionalInt")
             normalFloat = try decoder.decode(key: "normalFloat")
@@ -412,7 +412,7 @@ class AnyCoderTests: XCTestCase {
     
     func testFailedEnumException() {
         
-        enum TestEnum: String, AnyDecodable {
+        enum TestEnum: String, ValueDecodable {
             case first
             case second
         }
@@ -432,7 +432,7 @@ class AnyCoderTests: XCTestCase {
             XCTFail("Should have thrown")
         }
         catch (let error as DecoderError) {
-            if case .invalidType = error.errorType {
+            if case .failed = error.errorType {
                 XCTAssert(true)
             } else {
                 XCTFail("Unexpected error thrown: \(error)")
@@ -522,15 +522,11 @@ class AnyCoderTests: XCTestCase {
     
     func testSet() {
         
-        struct Test: AnyDecodable {
+        struct Test: ValueDecodable {
             let set: Set<TestHash>
             
-            init?(anyValue: Any) throws {
-                if let a = anyValue as? [Any] {
-                    set = try Set(a.decode() as [TestHash])
-                } else {
-                    return nil
-                }
+            init(value: [Any]) throws {
+                set = try Set(value.decode() as [TestHash])
             }
         }
         
@@ -538,7 +534,7 @@ class AnyCoderTests: XCTestCase {
         
         
         do {
-            let t = try Test(anyValue: json)!
+            let t = try Test(value: json)
             XCTAssertEqual(Set(["John", "Alex"]), Set(t.set.map { $0.name }))
         }
         catch {
@@ -595,7 +591,7 @@ class AnyCoderTests: XCTestCase {
         struct A: Decodable {
             let b: B
             
-            init?(decoder: Decoder) throws {
+            init(decoder: Decoder) throws {
                 b = try decoder.decode(key: "b")
             }
         }
@@ -603,7 +599,7 @@ class AnyCoderTests: XCTestCase {
         struct B: Decodable {
             let c: [C]
             
-            init?(decoder: Decoder) throws {
+            init(decoder: Decoder) throws {
                 c = try decoder.decode(key: "c")
             }
         }
@@ -611,7 +607,7 @@ class AnyCoderTests: XCTestCase {
         struct C: Decodable {
             let d: String
             
-            init?(decoder: Decoder) throws {
+            init(decoder: Decoder) throws {
                 d = try decoder.decode(key: "d")
             }
         }
@@ -654,6 +650,47 @@ class AnyCoderTests: XCTestCase {
         }
     }
     
+    func testCustomTransform() {
+        
+        struct Cache {
+            static let iso8601DateFormatter: DateFormatter = {
+                let formatter = DateFormatter()
+                formatter.locale = Locale(identifier: "en_US_POSIX")
+                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+                formatter.timeZone = TimeZone(secondsFromGMT: 0)
+                return formatter
+            }()
+        }
+        
+        
+        struct Record: Decodable, Encodable {
+            let timestamp: Date?
+            
+            init(decoder: Decoder) throws {
+                timestamp = try decoder.decode(key: "timestamp", transform: {
+                    Cache.iso8601DateFormatter.date(from: $0)
+                })
+            }
+            
+            func encode() -> Encoder {
+                var encoder = Encoder()
+                encoder.encode(timestamp, key: "timestamp") {
+                    Cache.iso8601DateFormatter.string(from: $0)
+                }
+                return encoder
+            }
+        }
+        
+        let json: Any = ["timestamp": "2015-08-08T21:57:13Z"]
+        
+        let t = try! Decoding.decode(json) as Record
+        let testJson = t.encode()
+        
+        let testData = try! JSONSerialization.data(withJSONObject: testJson, options: [])
+        let refData = try! JSONSerialization.data(withJSONObject: json, options: [])
+        XCTAssertEqual(testData, refData)
+    }
+    
     private lazy var data:Data = {
         let path = Bundle(for: type(of: self)).url(forResource: "Large", withExtension: "json")
         let data = try! Data(contentsOf: path!)
@@ -681,14 +718,14 @@ extension TestHash {
 }
 
 public struct Recording {
-    enum Status: String, AnyDecodable {
+    enum Status: String, ValueDecodable {
         case None = "0"
         case Recorded = "-3"
         case Recording = "-2"
         case Unknown
     }
     
-    enum RecGroup: String, AnyDecodable {
+    enum RecGroup: String, ValueDecodable {
         case Deleted = "Deleted"
         case Default = "Default"
         case LiveTV = "LiveTV"
@@ -714,7 +751,7 @@ public struct Program {
 
 extension Recording: Decodable {
     
-    public init?(decoder: Decoder) throws {
+    public init(decoder: Decoder) throws {
         startTsStr = try decoder.decode(key: "StartTs")
         recordId = try decoder.decode(key: "RecordId")
         status = (try? decoder.decode(key: "Status")) ?? .Unknown
@@ -724,7 +761,7 @@ extension Recording: Decodable {
 
 extension Program: Decodable {
     
-    public init?(decoder: Decoder) throws {
+    public init(decoder: Decoder) throws {
         title = try decoder.decode(key: "Title")
         chanId = try decoder.decoder(forKey: "Channel").decode(key: "ChanId")
         description = try decoder.decode(key: "Description", nilIfMissing: true)

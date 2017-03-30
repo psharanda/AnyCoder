@@ -10,8 +10,9 @@ public protocol Decodable {
     init?(decoder: Decoder) throws
 }
 
-public protocol AnyDecodable {
-    init?(anyValue: Any) throws
+public protocol ValueDecodable {
+    associatedtype ValueType
+    init?(value: ValueType) throws
 }
 
 //MARK: - Decoder
@@ -40,7 +41,7 @@ extension Decoder {
     
     public func decoder(forKey key: String) throws -> Decoder {        
         if let value = anyValue(forKey: key) {
-            return try castValue(value) { $0 }
+            return try Decoding.castValue(value) { $0 }
         } else {
             throw DecoderErrorType.missing.error
         }
@@ -54,7 +55,7 @@ extension Decoder {
         if let value = try transform(self) {
             return value
         } else {
-            throw DecoderErrorType.invalidType(T.self, self).error
+            throw DecoderErrorType.failed(T.self, self).error
         }
     }
     
@@ -63,7 +64,7 @@ extension Decoder {
     private func handleObjectDecode<T, U>(key: String, action: (T) throws -> U) throws -> U {
         return try commitAction(path: .key(key)) {
             if let value = anyValue(forKey: key) {
-                return try castValue(value, action: action)
+                return try Decoding.castValue(value, action: action)
             } else {
                 throw DecoderErrorType.missing.error
             }
@@ -74,7 +75,7 @@ extension Decoder {
         return try commitAction(path: .key(key)) {
             if let value = anyValue(forKey: key) {
                 return try doActionHandlingNull(value: value) {
-                    return try castValue(value, action: action)
+                    return try Decoding.castValue(value, action: action)
                 }
             } else {
                 if nilIfMissing {
@@ -89,7 +90,7 @@ extension Decoder {
     private func handleObjectDecode<T, U>(key: String, valueIfMissing: U, action: (T) throws -> U) throws -> U {
         return try commitAction(path: .key(key)) {
             if let value = anyValue(forKey: key) {
-                return try castValue(value, action: action)
+                return try Decoding.castValue(value, action: action)
             } else {
                 return valueIfMissing
             }
@@ -100,7 +101,7 @@ extension Decoder {
         return try commitAction(path: .key(key)) {
             if let value = anyValue(forKey: key) {
                 return try doActionHandlingNull(value: value) {
-                    return try castValue(value, action: action)
+                    return try Decoding.castValue(value, action: action)
                 }
             } else {
                 return valueIfMissingOrNull
@@ -151,41 +152,41 @@ extension Decoder {
     
     //MARK: - object - value
     
-    public func decode<T: AnyDecodable>(key: String) throws -> T {
+    public func decode<T: ValueDecodable>(key: String) throws -> T {
         return try decode(key: key, transform: T.init)
     }
     
-    public func decode<T>(key: String, transform: (Any) throws ->T?) throws -> T {
+    public func decode<T, ValueType>(key: String, transform: (ValueType) throws ->T?) throws -> T {
         return try handleObjectDecode(key: key) { (value: Any) -> T in
             try Decoding.decode(value, transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String,  nilIfMissing: Bool = false) throws -> T? {
+    public func decode<T: ValueDecodable>(key: String,  nilIfMissing: Bool = false) throws -> T? {
         return try decode(key: key, nilIfMissing: nilIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String,  nilIfMissing: Bool = false, transform: (Any) throws ->T?) throws -> T? {
+    public func decode<T, ValueType>(key: String,  nilIfMissing: Bool = false, transform: (ValueType) throws ->T?) throws -> T? {
         return try handleObjectDecode(key: key, nilIfMissing: nilIfMissing) { (value: Any) -> T in
             try Decoding.decode(value, transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String, valueIfMissing: T) throws -> T {
+    public func decode<T: ValueDecodable>(key: String, valueIfMissing: T) throws -> T {
         return try decode(key: key, valueIfMissing: valueIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String, valueIfMissing: T, transform: (Any) throws ->T?) throws -> T {
+    public func decode<T, ValueType>(key: String, valueIfMissing: T, transform: (ValueType) throws ->T?) throws -> T {
         return try handleObjectDecode(key: key, valueIfMissing: valueIfMissing) { (value: Any) -> T in
             try Decoding.decode(value, transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String, valueIfMissing: T?) throws -> T? {
+    public func decode<T: ValueDecodable>(key: String, valueIfMissing: T?) throws -> T? {
         return try decode(key: key, valueIfMissing: valueIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String, valueIfMissing: T?, transform: (Any) throws ->T?) throws -> T? {
+    public func decode<T, ValueType>(key: String, valueIfMissing: T?, transform: (ValueType) throws ->T?) throws -> T? {
         return try handleObjectDecode(key: key, valueIfMissingOrNull: valueIfMissing) { (value: Any) -> T in
             try Decoding.decode(value, transform: transform)
         }
@@ -233,41 +234,41 @@ extension Decoder {
     }
     
     //MARK: - array - value
-    public func decode<T: AnyDecodable>(key: String) throws -> [T] {
+    public func decode<T: ValueDecodable>(key: String) throws -> [T] {
         return try decode(key: key, transform: T.init)
     }
     
-    public func decode<T>(key: String, transform: (Any) throws ->T?) throws -> [T] {
+    public func decode<T, ValueType>(key: String, transform: (ValueType) throws ->T?) throws -> [T] {
         return try handleObjectDecode(key: key) { (decoder: ArrayDecoder) -> [T] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String,  nilIfMissing: Bool = false) throws -> [T]? {
+    public func decode<T: ValueDecodable>(key: String,  nilIfMissing: Bool = false) throws -> [T]? {
         return try decode(key: key, nilIfMissing: nilIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String,  nilIfMissing: Bool = false, transform: (Any) throws ->T?) throws -> [T]? {
+    public func decode<T, ValueType>(key: String,  nilIfMissing: Bool = false, transform: (ValueType) throws ->T?) throws -> [T]? {
         return try handleObjectDecode(key: key, nilIfMissing: nilIfMissing) { (decoder: ArrayDecoder) -> [T] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String, valueIfMissing: [T]) throws -> [T] {
+    public func decode<T: ValueDecodable>(key: String, valueIfMissing: [T]) throws -> [T] {
         return try decode(key: key, valueIfMissing: valueIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String, valueIfMissing: [T], transform: (Any) throws ->T?) throws -> [T] {
+    public func decode<T, ValueType>(key: String, valueIfMissing: [T], transform: (ValueType) throws ->T?) throws -> [T] {
         return try handleObjectDecode(key: key, valueIfMissing: valueIfMissing) { (decoder: ArrayDecoder) -> [T] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String, valueIfMissing: [T]?) throws -> [T]? {
+    public func decode<T: ValueDecodable>(key: String, valueIfMissing: [T]?) throws -> [T]? {
         return try decode(key: key, valueIfMissing: valueIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String, valueIfMissing: [T]?, transform: (Any) throws ->T?) throws -> [T]? {
+    public func decode<T, ValueType>(key: String, valueIfMissing: [T]?, transform: (ValueType) throws ->T?) throws -> [T]? {
         return try handleObjectDecode(key: key, valueIfMissingOrNull: valueIfMissing) { (decoder: ArrayDecoder) -> [T] in
             try decoder.decode(transform: transform)
         }
@@ -317,41 +318,41 @@ extension Decoder {
     
     //MARK: -  nulllable array - value
     
-    public func decode<T: AnyDecodable>(key: String) throws -> [T?] {
+    public func decode<T: ValueDecodable>(key: String) throws -> [T?] {
         return try decode(key: key, transform: T.init)
     }
     
-    public func decode<T>(key: String, transform: (Any) throws ->T?) throws -> [T?] {
+    public func decode<T, ValueType>(key: String, transform: (ValueType) throws ->T?) throws -> [T?] {
         return try handleObjectDecode(key: key) { (decoder: ArrayDecoder) -> [T?] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String,  nilIfMissing: Bool = false) throws -> [T?]? {
+    public func decode<T: ValueDecodable>(key: String,  nilIfMissing: Bool = false) throws -> [T?]? {
         return try decode(key: key, nilIfMissing: nilIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String,  nilIfMissing: Bool = false, transform: (Any) throws ->T?) throws -> [T?]? {
+    public func decode<T, ValueType>(key: String,  nilIfMissing: Bool = false, transform: (ValueType) throws ->T?) throws -> [T?]? {
         return try handleObjectDecode(key: key, nilIfMissing: nilIfMissing) { (decoder: ArrayDecoder) -> [T?] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String, valueIfMissing: [T?]) throws -> [T?] {
+    public func decode<T: ValueDecodable>(key: String, valueIfMissing: [T?]) throws -> [T?] {
         return try decode(key: key, valueIfMissing: valueIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String, valueIfMissing: [T?], transform: (Any) throws ->T?) throws -> [T?] {
+    public func decode<T, ValueType>(key: String, valueIfMissing: [T?], transform: (ValueType) throws ->T?) throws -> [T?] {
         return try handleObjectDecode(key: key, valueIfMissing: valueIfMissing) { (decoder: ArrayDecoder) -> [T?] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String, valueIfMissing: [T?]?) throws -> [T?]? {
+    public func decode<T: ValueDecodable>(key: String, valueIfMissing: [T?]?) throws -> [T?]? {
         return try decode(key: key, valueIfMissing: valueIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String, valueIfMissing: [T?]?, transform: (Any) throws ->T?) throws -> [T?]? {
+    public func decode<T, ValueType>(key: String, valueIfMissing: [T?]?, transform: (ValueType) throws ->T?) throws -> [T?]? {
         return try handleObjectDecode(key: key, valueIfMissingOrNull: valueIfMissing) { (decoder: ArrayDecoder) -> [T?] in
             try decoder.decode(transform: transform)
         }
@@ -401,41 +402,41 @@ extension Decoder {
     
     //MARK: - dictionary - value
     
-    public func decode<T: AnyDecodable>(key: String) throws -> [String: T] {
+    public func decode<T: ValueDecodable>(key: String) throws -> [String: T] {
         return try decode(key: key, transform: T.init)
     }
     
-    public func decode<T>(key: String, transform: (Any) throws ->T?) throws -> [String: T] {
+    public func decode<T, ValueType>(key: String, transform: (ValueType) throws ->T?) throws -> [String: T] {
         return try handleObjectDecode(key: key) { (decoder: [String: Any]) -> [String: T] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String,  nilIfMissing: Bool = false) throws -> [String: T]? {
+    public func decode<T: ValueDecodable>(key: String,  nilIfMissing: Bool = false) throws -> [String: T]? {
         return try decode(key: key, nilIfMissing: nilIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String,  nilIfMissing: Bool = false, transform: (Any) throws ->T?) throws -> [String: T]? {
+    public func decode<T, ValueType>(key: String,  nilIfMissing: Bool = false, transform: (ValueType) throws ->T?) throws -> [String: T]? {
         return try handleObjectDecode(key: key, nilIfMissing: nilIfMissing) { (decoder: [String: Any]) -> [String: T] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String, valueIfMissing: [String: T]) throws -> [String: T] {
+    public func decode<T: ValueDecodable>(key: String, valueIfMissing: [String: T]) throws -> [String: T] {
         return try decode(key: key, valueIfMissing: valueIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String, valueIfMissing: [String: T], transform: (Any) throws ->T?) throws -> [String: T] {
+    public func decode<T, ValueType>(key: String, valueIfMissing: [String: T], transform: (ValueType) throws ->T?) throws -> [String: T] {
         return try handleObjectDecode(key: key, valueIfMissing: valueIfMissing) { (decoder: [String: Any]) -> [String: T] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String, valueIfMissing: [String: T]?) throws -> [String: T]? {
+    public func decode<T: ValueDecodable>(key: String, valueIfMissing: [String: T]?) throws -> [String: T]? {
         return try decode(key: key, valueIfMissing: valueIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String, valueIfMissing: [String: T]?, transform: (Any) throws ->T?) throws -> [String: T]? {
+    public func decode<T, ValueType>(key: String, valueIfMissing: [String: T]?, transform: (ValueType) throws ->T?) throws -> [String: T]? {
         return try handleObjectDecode(key: key, valueIfMissingOrNull: valueIfMissing) { (decoder: [String: Any]) -> [String: T] in
             try decoder.decode(transform: transform)
         }
@@ -485,41 +486,41 @@ extension Decoder {
     
     //MARK: - nulllable dictionary - value
     
-    public func decode<T: AnyDecodable>(key: String) throws -> [String: T?] {
+    public func decode<T: ValueDecodable>(key: String) throws -> [String: T?] {
         return try decode(key: key, transform: T.init)
     }
     
-    public func decode<T>(key: String, transform: (Any) throws ->T?) throws -> [String: T?] {
+    public func decode<T, ValueType>(key: String, transform: (ValueType) throws ->T?) throws -> [String: T?] {
         return try handleObjectDecode(key: key) { (decoder: [String: Any]) -> [String: T?] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String,  nilIfMissing: Bool = false) throws -> [String: T?]? {
+    public func decode<T: ValueDecodable>(key: String,  nilIfMissing: Bool = false) throws -> [String: T?]? {
         return try decode(key: key, nilIfMissing: nilIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String,  nilIfMissing: Bool = false, transform: (Any) throws ->T?) throws -> [String: T?]? {
+    public func decode<T, ValueType>(key: String,  nilIfMissing: Bool = false, transform: (ValueType) throws ->T?) throws -> [String: T?]? {
         return try handleObjectDecode(key: key, nilIfMissing: nilIfMissing) { (decoder: [String: Any]) -> [String: T?] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String, valueIfMissing: [String: T?]) throws -> [String: T?] {
+    public func decode<T: ValueDecodable>(key: String, valueIfMissing: [String: T?]) throws -> [String: T?] {
         return try decode(key: key, valueIfMissing: valueIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String, valueIfMissing: [String: T?], transform: (Any) throws ->T?) throws -> [String: T?] {
+    public func decode<T, ValueType>(key: String, valueIfMissing: [String: T?], transform: (ValueType) throws ->T?) throws -> [String: T?] {
         return try handleObjectDecode(key: key, valueIfMissing: valueIfMissing) { (decoder: [String: Any]) -> [String: T?] in
             try decoder.decode(transform: transform)
         }
     }
     
-    public func decode<T: AnyDecodable>(key: String, valueIfMissing: [String: T?]?) throws -> [String: T?]? {
+    public func decode<T: ValueDecodable>(key: String, valueIfMissing: [String: T?]?) throws -> [String: T?]? {
         return try decode(key: key, valueIfMissing: valueIfMissing, transform: T.init)
     }
     
-    public func decode<T>(key: String, valueIfMissing: [String: T?]?, transform: (Any) throws ->T?) throws -> [String: T?]? {
+    public func decode<T, ValueType>(key: String, valueIfMissing: [String: T?]?, transform: (ValueType) throws ->T?) throws -> [String: T?]? {
         return try handleObjectDecode(key: key, valueIfMissingOrNull: valueIfMissing) { (decoder: [String: Any]) -> [String: T?] in
             try decoder.decode(transform: transform)
         }
@@ -558,11 +559,11 @@ extension Dictionary where Key == String, Value == Any {
     }
     
     //values dict
-    public func decode<T: AnyDecodable>() throws -> [String: T] {
+    public func decode<T: ValueDecodable>() throws -> [String: T] {
         return try decode(transform: T.init)
     }
     
-    public func decode<T>(transform: (Any) throws ->T?) throws -> [String: T] {
+    public func decode<T, ValueType>(transform: (ValueType) throws ->T?) throws -> [String: T] {
         return try map { (key, value) in
             try commitAction(path: .key(key)) {
                 try Decoding.decode(value, transform: transform)
@@ -571,11 +572,11 @@ extension Dictionary where Key == String, Value == Any {
     }
     
     //optional values dict
-    public func decode<T: AnyDecodable>() throws -> [String: T?] {
+    public func decode<T: ValueDecodable>() throws -> [String: T?] {
         return try decode(transform: T.init)
     }
     
-    public func decode<T>(transform: (Any) throws ->T?) throws -> [String: T?] {
+    public func decode<T, ValueType>(transform: (ValueType) throws ->T?) throws -> [String: T?] {
         return try map { (key, value) in
             try commitAction(path: .key(key)) {
                 return try doActionHandlingNull(value: value) {
@@ -635,11 +636,11 @@ extension ArrayDecoder {
     }
     
     //values array
-    public func decode<T: AnyDecodable>() throws -> [T] {
+    public func decode<T: ValueDecodable>() throws -> [T] {
         return try decode(transform: T.init)
     }
     
-    public func decode<T>(transform: (Any) throws ->T?) throws -> [T] {
+    public func decode<T, ValueType>(transform: (ValueType) throws ->T?) throws -> [T] {
         return try anyMap { el in
             try commitAction(path: .index(el.offset)) {
                 try Decoding.decode(el.element, transform: transform)
@@ -648,11 +649,11 @@ extension ArrayDecoder {
     }
     
     //values optionals array
-    public func decode<T: AnyDecodable>() throws -> [T?] {
+    public func decode<T: ValueDecodable>() throws -> [T?] {
         return try decode(transform: T.init)
     }
     
-    public func decode<T>(transform: (Any) throws ->T?) throws -> [T?] {
+    public func decode<T, ValueType>(transform: (ValueType) throws ->T?) throws -> [T?] {
         return try anyMap { el in
             try commitAction(path: .index(el.offset)) {
                 return try doActionHandlingNull(value: el.element) {
@@ -668,15 +669,15 @@ extension ArrayDecoder {
 public struct Decoding {
     
     //value
-    public static func decode<T: AnyDecodable>(_ value: Any) throws -> T {
+    public static func decode<T: ValueDecodable>(_ value: Any) throws -> T {
         return try decode(value, transform: T.init)
     }
     
-    public static func decode<T>(_ value: Any, transform: (Any) throws ->T? ) throws -> T {
-        if let value = try transform(value) {
+    public static func decode<T, ValueType>(_ value: Any, transform: (ValueType) throws ->T? ) throws -> T {
+        if let value = try castValue(value) { try transform($0)} {
             return value
         } else {
-            throw DecoderErrorType.invalidType(T.self, self).error
+            throw DecoderErrorType.failed(T.self, value).error
         }
     }
     
@@ -734,6 +735,15 @@ public struct Decoding {
             try decoder.decode(transform: transform)
         }
     }
+    
+    fileprivate static func castValue<T, U>(_ value: Any, action: (T) throws ->U) throws -> U {
+        if let target = value as? T {
+            let res = try action(target)
+            return res
+        } else {
+            throw DecoderErrorType.invalidType(T.self, value).error
+        }
+    }
 }
 
 //MARK: - utils
@@ -764,12 +774,3 @@ fileprivate func doActionHandlingNull<U>(value: Any, action: () throws ->U) thro
         throw error
     }
 }
-
-fileprivate func castValue<T, U>(_ value: Any, action: (T) throws ->U) throws -> U {
-    if let target = value as? T {
-        return try action(target)
-    } else {
-        throw DecoderErrorType.invalidType(T.self, value).error
-    }
-}
-

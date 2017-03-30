@@ -7,15 +7,11 @@ import Foundation
 import CoreGraphics
 
 //MARK:- scalar decodables
-public protocol ScalarDecodable : AnyDecodable {}
+public protocol ScalarDecodable : ValueDecodable {}
 
 extension ScalarDecodable {
-    public init?(anyValue: Any) {
-        if let value = anyValue as? Self {
-            self = value
-        } else {
-            return nil
-        }
+    public init(value: Self) {
+        self = value
     }
 }
 
@@ -36,34 +32,22 @@ extension String : ScalarDecodable {}
 extension Bool : ScalarDecodable {}
 
 //MARK:- URL as decodable
-extension URL: AnyDecodable {
-    public init?(anyValue: Any) {
-        if let value = anyValue as? String {
-            self.init(string: value)
-        } else {
-            return nil
-        }
+extension URL: ValueDecodable {
+    public init?(value: String) {
+        self.init(string: value)
     }
 }
 
-//MARK:- RawRepresentable as decodable, enum itself must be marked as conforming AnyDecodable
-extension AnyDecodable where Self: RawRepresentable, Self.RawValue: AnyDecodable {
-    public init?(anyValue: Any) {
-        if let value = anyValue as? RawValue {
-            self.init(rawValue: value)
-        } else {
-            return nil
-        }
+//MARK:- RawRepresentable as decodable, enum itself must be marked as conforming ValueDecodable
+extension ValueDecodable where Self: RawRepresentable, Self.RawValue: ValueDecodable {
+    public init?(value: RawValue) {
+        self.init(rawValue: value)
     }
 }
 
 //MARK:- Date as decodable
-extension Date: AnyDecodable {
-    public init?(anyValue: Any) {
-        if let value = anyValue as? Double {
-            self.init(timeIntervalSince1970: value)
-        } else {
-            return nil
-        }
+extension Date: ValueDecodable {
+    public init(value: Double) {
+        self.init(timeIntervalSince1970: value)
     }
 }

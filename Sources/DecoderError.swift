@@ -14,6 +14,7 @@ extension DecoderError: CustomDebugStringConvertible {
 public enum DecoderErrorType {
     case missing
     case invalidType(Any.Type, Any)
+    case failed(Any.Type, Any)
     
     public var error: DecoderError  {
         return DecoderError(errorType: self, path: [])
@@ -52,9 +53,11 @@ public struct DecoderError: Error {
         
         switch errorType {
         case .missing:
-            return "Value is missing at path '\(jsonPath)'"
+            return "\(jsonPath): value is missing"
         case .invalidType(let type, let value):
-            return "Invalid value '\(value)' of type '\(type(of: value))' was found at path '\(jsonPath)', while expected '\(type)'"
+            return "\(jsonPath): invalid value '\(value)' of type '\(type(of: value))', while expected '\(type)'"
+        case .failed(let type, let value):
+            return "\(jsonPath): Failed to convert value '\(value)' of type '\(type(of: value))' to '\(type)'"
         }
     }
     
@@ -64,6 +67,8 @@ public struct DecoderError: Error {
             return -1
         case .invalidType:
             return -2
+        case .failed:
+            return -3
         }
     }
 

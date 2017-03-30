@@ -12,25 +12,21 @@
 		1BEB5BE71E8AF46D004DD635 /* DecoderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE01E8AF46D004DD635 /* DecoderError.swift */; };
 		1BEB5BE81E8AF46D004DD635 /* Decodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE11E8AF46D004DD635 /* Decodables.swift */; };
 		1BEB5BE91E8AF46D004DD635 /* Encodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE21E8AF46D004DD635 /* Encodables.swift */; };
-		1BEB5BEA1E8AF46D004DD635 /* Dictionary+Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */; };
 		1BEB5BEC1E8AF4B9004DD635 /* Decoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BDE1E8AF46D004DD635 /* Decoder.swift */; };
 		1BEB5BED1E8AF4B9004DD635 /* Encoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BDF1E8AF46D004DD635 /* Encoder.swift */; };
 		1BEB5BEE1E8AF4B9004DD635 /* DecoderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE01E8AF46D004DD635 /* DecoderError.swift */; };
 		1BEB5BEF1E8AF4B9004DD635 /* Decodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE11E8AF46D004DD635 /* Decodables.swift */; };
 		1BEB5BF01E8AF4B9004DD635 /* Encodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE21E8AF46D004DD635 /* Encodables.swift */; };
-		1BEB5BF11E8AF4B9004DD635 /* Dictionary+Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */; };
 		1BEB5BF31E8AF4BA004DD635 /* Decoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BDE1E8AF46D004DD635 /* Decoder.swift */; };
 		1BEB5BF41E8AF4BA004DD635 /* Encoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BDF1E8AF46D004DD635 /* Encoder.swift */; };
 		1BEB5BF51E8AF4BA004DD635 /* DecoderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE01E8AF46D004DD635 /* DecoderError.swift */; };
 		1BEB5BF61E8AF4BA004DD635 /* Decodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE11E8AF46D004DD635 /* Decodables.swift */; };
 		1BEB5BF71E8AF4BA004DD635 /* Encodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE21E8AF46D004DD635 /* Encodables.swift */; };
-		1BEB5BF81E8AF4BA004DD635 /* Dictionary+Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */; };
 		1BEB5BFA1E8AF4BA004DD635 /* Decoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BDE1E8AF46D004DD635 /* Decoder.swift */; };
 		1BEB5BFB1E8AF4BA004DD635 /* Encoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BDF1E8AF46D004DD635 /* Encoder.swift */; };
 		1BEB5BFC1E8AF4BA004DD635 /* DecoderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE01E8AF46D004DD635 /* DecoderError.swift */; };
 		1BEB5BFD1E8AF4BA004DD635 /* Decodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE11E8AF46D004DD635 /* Decodables.swift */; };
 		1BEB5BFE1E8AF4BA004DD635 /* Encodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE21E8AF46D004DD635 /* Encodables.swift */; };
-		1BEB5BFF1E8AF4BA004DD635 /* Dictionary+Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */; };
 		1BEB5C031E8B9A91004DD635 /* Large.json in Resources */ = {isa = PBXBuildFile; fileRef = 1BEB5C021E8B9A91004DD635 /* Large.json */; };
 		1BEB5C041E8B9A91004DD635 /* Large.json in Resources */ = {isa = PBXBuildFile; fileRef = 1BEB5C021E8B9A91004DD635 /* Large.json */; };
 		1BEB5C051E8B9A91004DD635 /* Large.json in Resources */ = {isa = PBXBuildFile; fileRef = 1BEB5C021E8B9A91004DD635 /* Large.json */; };
@@ -72,7 +68,6 @@
 		1BEB5BE01E8AF46D004DD635 /* DecoderError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DecoderError.swift; path = Sources/DecoderError.swift; sourceTree = "<group>"; };
 		1BEB5BE11E8AF46D004DD635 /* Decodables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Decodables.swift; path = Sources/Decodables.swift; sourceTree = "<group>"; };
 		1BEB5BE21E8AF46D004DD635 /* Encodables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Encodables.swift; path = Sources/Encodables.swift; sourceTree = "<group>"; };
-		1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Dictionary+Map.swift"; path = "Sources/Dictionary+Map.swift"; sourceTree = "<group>"; };
 		1BEB5C021E8B9A91004DD635 /* Large.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Large.json; sourceTree = "<group>"; };
 		52D6D97C1BEFF229002C0205 /* AnyCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AnyCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9861BEFF229002C0205 /* AnyCoder-iOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AnyCoder-iOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -169,14 +164,6 @@
 			name = Encoder;
 			sourceTree = "<group>";
 		};
-		1BEB5C091E8BB346004DD635 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				1BEB5BE31E8AF46D004DD635 /* Dictionary+Map.swift */,
-			);
-			name = Utils;
-			sourceTree = "<group>";
-		};
 		1BEB5C0A1E8BB34F004DD635 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -188,7 +175,6 @@
 		52D6D9721BEFF229002C0205 = {
 			isa = PBXGroup;
 			children = (
-				1BEB5C091E8BB346004DD635 /* Utils */,
 				1BEB5C071E8BB279004DD635 /* Decoder */,
 				1BEB5C081E8BB318004DD635 /* Encoder */,
 				1BEB5C0A1E8BB34F004DD635 /* Tests */,
@@ -525,7 +511,6 @@
 				1BEB5BE91E8AF46D004DD635 /* Encodables.swift in Sources */,
 				1BEB5BE81E8AF46D004DD635 /* Decodables.swift in Sources */,
 				1BEB5BE61E8AF46D004DD635 /* Encoder.swift in Sources */,
-				1BEB5BEA1E8AF46D004DD635 /* Dictionary+Map.swift in Sources */,
 				1BEB5BE51E8AF46D004DD635 /* Decoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -546,7 +531,6 @@
 				1BEB5BF71E8AF4BA004DD635 /* Encodables.swift in Sources */,
 				1BEB5BF61E8AF4BA004DD635 /* Decodables.swift in Sources */,
 				1BEB5BF41E8AF4BA004DD635 /* Encoder.swift in Sources */,
-				1BEB5BF81E8AF4BA004DD635 /* Dictionary+Map.swift in Sources */,
 				1BEB5BF31E8AF4BA004DD635 /* Decoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -559,7 +543,6 @@
 				1BEB5BFE1E8AF4BA004DD635 /* Encodables.swift in Sources */,
 				1BEB5BFD1E8AF4BA004DD635 /* Decodables.swift in Sources */,
 				1BEB5BFB1E8AF4BA004DD635 /* Encoder.swift in Sources */,
-				1BEB5BFF1E8AF4BA004DD635 /* Dictionary+Map.swift in Sources */,
 				1BEB5BFA1E8AF4BA004DD635 /* Decoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -572,7 +555,6 @@
 				1BEB5BF01E8AF4B9004DD635 /* Encodables.swift in Sources */,
 				1BEB5BEF1E8AF4B9004DD635 /* Decodables.swift in Sources */,
 				1BEB5BED1E8AF4B9004DD635 /* Encoder.swift in Sources */,
-				1BEB5BF11E8AF4B9004DD635 /* Dictionary+Map.swift in Sources */,
 				1BEB5BEC1E8AF4B9004DD635 /* Decoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
