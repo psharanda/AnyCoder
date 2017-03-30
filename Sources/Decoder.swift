@@ -41,7 +41,7 @@ extension Decoder {
     
     public func decoder(forKey key: String) throws -> Decoder {        
         if let value = anyValue(forKey: key) {
-            return try Decoding.castValue(value) { $0 }
+            return try castValue(value) { $0 }
         } else {
             throw DecoderErrorType.missing.error
         }
@@ -64,7 +64,7 @@ extension Decoder {
     private func handleObjectDecode<T, U>(key: String, action: (T) throws -> U) throws -> U {
         return try commitAction(path: .key(key)) {
             if let value = anyValue(forKey: key) {
-                return try Decoding.castValue(value, action: action)
+                return try castValue(value, action: action)
             } else {
                 throw DecoderErrorType.missing.error
             }
@@ -75,7 +75,7 @@ extension Decoder {
         return try commitAction(path: .key(key)) {
             if let value = anyValue(forKey: key) {
                 return try doActionHandlingNull(value: value) {
-                    return try Decoding.castValue(value, action: action)
+                    return try castValue(value, action: action)
                 }
             } else {
                 if nilIfMissing {
@@ -90,7 +90,7 @@ extension Decoder {
     private func handleObjectDecode<T, U>(key: String, valueIfMissing: U, action: (T) throws -> U) throws -> U {
         return try commitAction(path: .key(key)) {
             if let value = anyValue(forKey: key) {
-                return try Decoding.castValue(value, action: action)
+                return try castValue(value, action: action)
             } else {
                 return valueIfMissing
             }
@@ -624,14 +624,14 @@ public struct Decoding {
             try decoder.decode(transform: transform)
         }
     }
-    
-    fileprivate static func castValue<T, U>(_ value: Any, action: (T) throws ->U) throws -> U {
-        if let target = value as? T {
-            let res = try action(target)
-            return res
-        } else {
-            throw DecoderErrorType.invalidType(T.self, value).error
-        }
+}
+
+fileprivate func castValue<T, U>(_ value: Any, action: (T) throws ->U) throws -> U {
+    if let target = value as? T {
+        let res = try action(target)
+        return res
+    } else {
+        throw DecoderErrorType.invalidType(T.self, value).error
     }
 }
 
@@ -664,14 +664,4 @@ fileprivate func doActionHandlingNull<U>(value: Any, action: () throws ->U) thro
     }
 }
 
-struct Test: Decodable {
-    let name: String?
-    let names: [String]?
-    let naming: [String:String]?
-    
-    init(decoder: Decoder) throws {
-        name = try decoder.decode(key: "name", valueIfMissing: "John")
-        names = try decoder.decode(key: "names", valueIfMissing: ["John"])
-        naming = try decoder.decode(key: "naming", valueIfMissing: ["First":"John"])
-    }
-}
+
