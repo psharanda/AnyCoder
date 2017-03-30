@@ -490,6 +490,34 @@ class AnyCoderTests: XCTestCase {
         }
     }
     
+    func testValueIfMissing() {
+        
+        struct Test: Decodable {
+            let name: String
+            let names: [String]
+            let naming: [String:String]
+            
+            init(decoder: Decoder) throws {
+                name = try decoder.decode(key: "name", valueIfMissing: "John")
+                names = try decoder.decode(key: "names", valueIfMissing: ["John"])
+                naming = try decoder.decode(key: "naming", valueIfMissing: ["First":"John"])
+            }
+        }
+        
+        let json: [String: Any] = [:]
+        
+        
+        do {
+            let t = try json.decode() as Test
+            XCTAssertEqual("John", t.name)
+            XCTAssertEqual(["John"], t.names)
+            XCTAssertEqual(["First":"John"], t.naming)
+        }
+        catch {
+            XCTFail("Unexpected error thrown: \(error)")
+        }
+    }
+    
     func testInnerDecode() {
         
         struct InnerTest: Decodable {
