@@ -162,4 +162,3 @@ extension Dictionary where Key == String, Value: Optionable, Value.Wrapped: AnyE
         return map { $0.1.map { $0.encode() as Any } ?? NSNull() as Any }
     }
 }
-
