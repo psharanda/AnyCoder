@@ -46,8 +46,6 @@ class AnyCoderTests: XCTestCase {
         let optionalDouble: Double?
         let normalBool: Bool
         let optionalBool: Bool?
-        let normalColor: Color
-        let optionalColor: Color?
         let normalDate: Date
         let optionalDate: Date?
         let normalUrl: URL
@@ -56,12 +54,28 @@ class AnyCoderTests: XCTestCase {
         let optionalStringEnum: TestStringEnum?
         let normalIntEnum: TestIntEnum
         let optionalIntEnum: TestIntEnum?
+        
         let normalChild: TestChild
         let optionalChild: TestChild?
+        
         let normalChildArray: [TestChild]
+        let normalOptionalChildArray: [TestChild?]
         let optionalChildArray: [TestChild]?
+        let optionalOptionalChildArray: [TestChild?]?
         let normalChildDictionary: [String: TestChild]
+        let normalOptionalChildDictionary: [String: TestChild?]
         let optionalChildDictionary: [String: TestChild]?
+        let optionalOptionalChildDictionary: [String: TestChild?]?
+        
+        let normalIntArray: [Int]
+        let normalOptionalIntArray: [Int?]
+        let optionalIntArray: [Int]?
+        let optionalOptionalIntArray: [Int?]?
+        let normalIntDictionary: [String: Int]
+        let normalOptionalIntDictionary: [String: Int?]
+        let optionalIntDictionary: [String: Int]?
+        let optionalOptionalIntDictionary: [String: Int?]?
+        
         
         init?(decoder: Decoder) throws {
             normalInt = try decoder.decode(key: "normalInt")
@@ -74,8 +88,6 @@ class AnyCoderTests: XCTestCase {
             optionalDouble = try decoder.decode(key: "optionalDouble")
             normalBool = try decoder.decode(key: "normalBool")
             optionalBool = try decoder.decode(key: "optionalBool")
-            normalColor = try decoder.decode(key: "normalColor")
-            optionalColor = try decoder.decode(key: "optionalColor")
             normalDate = try decoder.decode(key: "normalDate")
             optionalDate = try decoder.decode(key: "optionalDate")
             normalUrl = try decoder.decode(key: "normalUrl")
@@ -86,10 +98,24 @@ class AnyCoderTests: XCTestCase {
             optionalIntEnum = try decoder.decode(key: "optionalIntEnum")
             normalChild = try decoder.decode(key: "normalChild")
             optionalChild = try decoder.decode(key: "optionalChild")
+            
             normalChildArray = try decoder.decode(key: "normalChildArray")
+            normalOptionalChildArray = try decoder.decode(key: "normalOptionalChildArray")
             optionalChildArray = try decoder.decode(key: "optionalChildArray")
+            optionalOptionalChildArray = try decoder.decode(key: "optionalOptionalChildArray")
             normalChildDictionary = try decoder.decode(key: "normalChildDictionary")
+            normalOptionalChildDictionary = try decoder.decode(key: "normalOptionalChildDictionary")
             optionalChildDictionary = try decoder.decode(key: "optionalChildDictionary")
+            optionalOptionalChildDictionary = try decoder.decode(key: "optionalOptionalChildDictionary")
+            
+            normalIntArray = try decoder.decode(key: "normalIntArray")
+            normalOptionalIntArray = try decoder.decode(key: "normalOptionalIntArray")
+            optionalIntArray = try decoder.decode(key: "optionalIntArray")
+            optionalOptionalIntArray = try decoder.decode(key: "optionalOptionalIntArray")
+            normalIntDictionary = try decoder.decode(key: "normalIntDictionary")
+            normalOptionalIntDictionary = try decoder.decode(key: "normalOptionalIntDictionary")
+            optionalIntDictionary = try decoder.decode(key: "optionalIntDictionary")
+            optionalOptionalIntDictionary = try decoder.decode(key: "optionalOptionalIntDictionary")
         }
         
         func encode() -> Encoder {
@@ -104,8 +130,6 @@ class AnyCoderTests: XCTestCase {
             encoder.encode(optionalDouble, key: "optionalDouble")
             encoder.encode(normalBool, key: "normalBool")
             encoder.encode(optionalBool, key: "optionalBool")
-            encoder.encode(normalColor, key: "normalColor")
-            encoder.encode(optionalColor, key: "optionalColor")
             encoder.encode(normalDate, key: "normalDate")
             encoder.encode(optionalDate, key: "optionalDate")
             encoder.encode(normalUrl, key: "normalUrl")
@@ -116,10 +140,25 @@ class AnyCoderTests: XCTestCase {
             encoder.encode(optionalIntEnum, key: "optionalIntEnum")
             encoder.encode(normalChild, key: "normalChild")
             encoder.encode(optionalChild, key: "optionalChild")
+            
             encoder.encode(normalChildArray, key: "normalChildArray")
+            encoder.encode(normalOptionalChildArray, key: "normalOptionalChildArray")
             encoder.encode(optionalChildArray, key: "optionalChildArray")
+            encoder.encode(optionalOptionalChildArray, key: "optionalOptionalChildArray")
             encoder.encode(normalChildDictionary, key: "normalChildDictionary")
+            encoder.encode(normalOptionalChildDictionary, key: "normalOptionalChildDictionary")
             encoder.encode(optionalChildDictionary, key: "optionalChildDictionary")
+            encoder.encode(optionalOptionalChildDictionary, key: "optionalOptionalChildDictionary")
+            
+            encoder.encode(normalIntArray, key: "normalIntArray")
+            encoder.encode(normalOptionalIntArray, key: "normalOptionalIntArray")
+            encoder.encode(optionalIntArray, key: "optionalIntArray")
+            encoder.encode(optionalOptionalIntArray, key: "optionalOptionalIntArray")
+            encoder.encode(normalIntDictionary, key: "normalIntDictionary")
+            encoder.encode(normalOptionalIntDictionary, key: "normalOptionalIntDictionary")
+            encoder.encode(optionalIntDictionary, key: "optionalIntDictionary")
+            encoder.encode(optionalOptionalIntDictionary, key: "optionalOptionalIntDictionary")
+            
             return encoder
         }
     }
@@ -138,7 +177,7 @@ class AnyCoderTests: XCTestCase {
     
     func testStrictModelWithNulls() {
         
-        let strictJSONWithNulls: [String: Any] = [
+        let json: [String: Any] = [
             "normalInt":1341,
             "optionalInt":NSNull(),
             "normalFloat":24.3 as Float,
@@ -149,8 +188,6 @@ class AnyCoderTests: XCTestCase {
             "optionalDouble":NSNull(),
             "normalBool":true,
             "optionalBool":NSNull(),
-            "normalColor":"#434342",
-            "optionalColor":NSNull(),
             "normalDate":423423432 as Double,
             "optionalDate":NSNull(),
             "normalUrl":"http://google.com",
@@ -161,23 +198,42 @@ class AnyCoderTests: XCTestCase {
             "optionalIntEnum":NSNull(),
             "normalChild": ["name": "John"],
             "optionalChild":NSNull(),
+            
             "normalChildArray":[["name": "John"], ["name": "Alexa"]],
+            "normalOptionalChildArray": [["name": "John"] as Any, ["name": "Alexa"] as Any, NSNull() as Any],
             "optionalChildArray":NSNull(),
+            "optionalOptionalChildArray":NSNull(),
             "normalChildDictionary":["first": ["name": "John"], "second": ["name": "Alexa"]],
-            "optionalChildDictionary":NSNull()
+            "normalOptionalChildDictionary":["first": ["name": "John"] as Any, "second": ["name": "Alexa"] as Any, "third": NSNull() as Any],
+            "optionalChildDictionary":NSNull(),
+            "optionalOptionalChildDictionary":NSNull(),
+            
+            "normalIntArray":[23, 32],
+            "normalOptionalIntArray": [22 as Any, 32 as Any, NSNull() as Any],
+            "optionalIntArray":NSNull(),
+            "optionalOptionalIntArray":NSNull(),
+            "normalIntDictionary":["first": 22, "second": 33],
+            "normalOptionalIntDictionary":["first": 22 as Any, "second": 222 as Any, "third": NSNull() as Any],
+            "optionalIntDictionary":NSNull(),
+            "optionalOptionalIntDictionary":NSNull()
         ]
         
-        let testParent = try! strictJSONWithNulls.decode() as TestParent
-        let testJson = testParent.encode()
-        
-        let testData = try! JSONSerialization.data(withJSONObject: testJson, options: [])
-        let refData = try! JSONSerialization.data(withJSONObject: strictJSONWithNulls, options: [])
-        XCTAssertEqual(testData, refData)
+        do {
+            let testParent = try json.decode() as TestParent
+            let testJson = testParent.encode()
+            
+            let testData = try JSONSerialization.data(withJSONObject: testJson, options: [])
+            let refData = try JSONSerialization.data(withJSONObject: json, options: [])
+            XCTAssertEqual(testData, refData)
+        }
+        catch {
+            XCTFail("Unexpected error thrown: \(error)")
+        }
     }
     
     func testStrictModelNSNumberWithNulls() {
         
-        let strictJSONWithNulls: [String: Any] = [
+        let json: [String: Any] = [
             "normalInt": NSNumber(value: 1341) as Any,
             "optionalInt": NSNull(),
             "normalFloat": NSNumber(value: 24.3) as Any,
@@ -188,8 +244,6 @@ class AnyCoderTests: XCTestCase {
             "optionalDouble":NSNull(),
             "normalBool":true,
             "optionalBool":NSNull(),
-            "normalColor":"#434342",
-            "optionalColor":NSNull(),
             "normalDate": NSNumber(value: 423423432) as Any,
             "optionalDate":NSNull(),
             "normalUrl":"http://google.com",
@@ -201,22 +255,40 @@ class AnyCoderTests: XCTestCase {
             "normalChild": ["name": "John"],
             "optionalChild":NSNull(),
             "normalChildArray":[["name": "John"], ["name": "Alexa"]],
+            "normalOptionalChildArray": [["name": "John"] as Any, ["name": "Alexa"] as Any, NSNull() as Any],
             "optionalChildArray":NSNull(),
+            "optionalOptionalChildArray":NSNull(),
             "normalChildDictionary":["first": ["name": "John"], "second": ["name": "Alexa"]],
-            "optionalChildDictionary":NSNull()
+            "normalOptionalChildDictionary":["first": ["name": "John"] as Any, "second": ["name": "Alexa"] as Any, "third": NSNull() as Any],
+            "optionalChildDictionary":NSNull(),
+            "optionalOptionalChildDictionary":NSNull(),
+            
+            "normalIntArray":[NSNumber(value: 23), NSNumber(value: 23)],
+            "normalOptionalIntArray": [NSNumber(value: 23) as Any, NSNumber(value: 23) as Any, NSNull() as Any],
+            "optionalIntArray":NSNull(),
+            "optionalOptionalIntArray":NSNull(),
+            "normalIntDictionary":["first": NSNumber(value: 23), "second": NSNumber(value: 23)],
+            "normalOptionalIntDictionary":["first": NSNumber(value: 23) as Any, "second": NSNumber(value: 23) as Any, "third": NSNull() as Any],
+            "optionalIntDictionary":NSNull(),
+            "optionalOptionalIntDictionary":NSNull()
         ]
         
-        let testParent = try! strictJSONWithNulls.decode() as TestParent
-        let testJson = testParent.encode()
-        
-        let testData = try! JSONSerialization.data(withJSONObject: testJson, options: [])
-        let refData = try! JSONSerialization.data(withJSONObject: strictJSONWithNulls, options: [])
-        XCTAssertEqual(testData, refData)
+        do {
+            let testParent = try json.decode() as TestParent
+            let testJson = testParent.encode()
+            
+            let testData = try JSONSerialization.data(withJSONObject: testJson, options: [])
+            let refData = try JSONSerialization.data(withJSONObject: json, options: [])
+            XCTAssertEqual(testData, refData)
+        }
+        catch {
+            XCTFail("Unexpected error thrown: \(error)")
+        }
     }
     
     func testStrictModelNSNumberWithoutNulls() {
         
-        let strictJSONWithNulls: [String: Any] = [
+        let json: [String: Any] = [
             "normalInt": NSNumber(value: 1341) as Any,
             "optionalInt": NSNumber(value: 1341) as Any,
             "normalFloat": NSNumber(value: 24.3) as Any,
@@ -227,8 +299,6 @@ class AnyCoderTests: XCTestCase {
             "optionalDouble": NSNumber(value: 325235325.32) as Any,
             "normalBool":true,
             "optionalBool": true,
-            "normalColor":"#434342",
-            "optionalColor":"#434342",
             "normalDate": NSNumber(value: 423423432) as Any,
             "optionalDate":NSNumber(value: 423423432) as Any,
             "normalUrl":"http://google.com",
@@ -240,17 +310,30 @@ class AnyCoderTests: XCTestCase {
             "normalChild": ["name": "John"],
             "optionalChild": ["name": "John"],
             "normalChildArray":[["name": "John"], ["name": "Alexa"]],
+            "normalOptionalChildArray": [["name": "John"] as Any, ["name": "Alexa"] as Any, NSNull() as Any],
             "optionalChildArray":[["name": "John"], ["name": "Alexa"]],
+            "optionalOptionalChildArray":[["name": "John"] as Any, ["name": "Alexa"] as Any, NSNull() as Any],
             "normalChildDictionary":["first": ["name": "John"], "second": ["name": "Alexa"]],
-            "optionalChildDictionary":["first": ["name": "John"], "second": ["name": "Alexa"]]
+            "normalOptionalChildDictionary":["first": ["name": "John"] as Any, "second": ["name": "Alexa"] as Any, "third": NSNull() as Any],
+            "optionalChildDictionary":["first": ["name": "John"], "second": ["name": "Alexa"]],
+            "optionalOptionalChildDictionary":["third": NSNull() as Any],
+            
+            "normalIntArray":[23, 32],
+            "normalOptionalIntArray": [22 as Any, 32 as Any, NSNull() as Any],
+            "optionalIntArray":[23, 32],
+            "optionalOptionalIntArray":[22 as Any, 32 as Any, NSNull() as Any],
+            "normalIntDictionary":["first": 22, "second": 33],
+            "normalOptionalIntDictionary":["first": 22 as Any, "second": 222 as Any, "third": NSNull() as Any],
+            "optionalIntDictionary":["first": 22, "second": 33],
+            "optionalOptionalIntDictionary":["first": 22 as Any, "second": 222 as Any, "third": NSNull() as Any]
         ]
         
         do {
-            let testParent = try strictJSONWithNulls.decode() as TestParent
+            let testParent = try json.decode() as TestParent
             let testJson = testParent.encode()
             
             let testData = try JSONSerialization.data(withJSONObject: testJson, options: [])
-            let refData = try JSONSerialization.data(withJSONObject: strictJSONWithNulls, options: [])
+            let refData = try JSONSerialization.data(withJSONObject: json, options: [])
             XCTAssertEqual(testData, refData)
         }
         catch {
@@ -302,14 +385,14 @@ class AnyCoderTests: XCTestCase {
     func testFailedException() {
         
         struct TestColor: Decodable {
-            let color: Color
+            let url: URL
             
             init(decoder: Decoder) throws {
-                color = try decoder.decode(key: "color")
+                url = try decoder.decode(key: "url")
             }
         }
         
-        let json: [String: Any] = ["color": "sfsfsdfsdf"]
+        let json: [String: Any] = ["url": 10]
         do {
             _ = try json.decode() as TestColor
             
@@ -364,17 +447,17 @@ class AnyCoderTests: XCTestCase {
     
     func testFailedOptionalException() {
         
-        struct TestColor: Decodable {
-            let color: Color?
+        struct TestUrl: Decodable {
+            let url: URL?
             
             init(decoder: Decoder) throws {
-                color = try decoder.decode(key: "color")
+                url = try decoder.decode(key: "url")
             }
         }
         
-        let json: [String: Any] = ["color": NSNull()]
+        let json: [String: Any] = ["url": NSNull()]
         do {
-            _ = try json.decode() as TestColor
+            _ = try json.decode() as TestUrl
         }
         catch {
             XCTFail("Should haven't thrown")
