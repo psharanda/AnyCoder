@@ -39,11 +39,23 @@ extension NSDictionary: Decoder {
 
 extension Decoder {
     
-    public func decoder(forKey key: String) throws -> Decoder {        
+    public func decoder(forKey key: String) throws -> Decoder {
         if let value = anyValue(forKey: key) {
             return try castValue(value) { $0 }
         } else {
             throw DecoderErrorType.missing.error
+        }
+    }
+    
+    public func decoder(forKey key: String, nilIfMissing: Bool = false) throws -> Decoder? {
+        if let value = anyValue(forKey: key) {
+            return try castValue(value) { $0 }
+        } else {
+            if nilIfMissing {
+                return nil
+            } else {
+                throw DecoderErrorType.missing.error
+            }
         }
     }
     
