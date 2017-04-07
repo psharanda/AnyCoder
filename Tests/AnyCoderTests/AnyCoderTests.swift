@@ -79,85 +79,85 @@ class AnyCoderTests: XCTestCase {
         
         init(decoder: Decoder) throws {
             normalInt = try decoder.decode(key: "normalInt")
-            optionalInt = try decoder.decode(key: "optionalInt")
+            optionalInt = try decoder.decode(key: "optionalInt", throwIfMissing: true)
             normalFloat = try decoder.decode(key: "normalFloat")
-            optionalFloat = try decoder.decode(key: "optionalFloat")
+            optionalFloat = try decoder.decode(key: "optionalFloat", throwIfMissing: true)
             normalCGFloat = try decoder.decode(key: "normalCGFloat")
-            optionalCGFloat = try decoder.decode(key: "optionalCGFloat")
+            optionalCGFloat = try decoder.decode(key: "optionalCGFloat", throwIfMissing: true)
             normalDouble = try decoder.decode(key: "normalDouble")
-            optionalDouble = try decoder.decode(key: "optionalDouble")
+            optionalDouble = try decoder.decode(key: "optionalDouble", throwIfMissing: true)
             normalBool = try decoder.decode(key: "normalBool")
-            optionalBool = try decoder.decode(key: "optionalBool")
+            optionalBool = try decoder.decode(key: "optionalBool", throwIfMissing: true)
             normalDate = try decoder.decode(key: "normalDate")
-            optionalDate = try decoder.decode(key: "optionalDate")
+            optionalDate = try decoder.decode(key: "optionalDate", throwIfMissing: true)
             normalUrl = try decoder.decode(key: "normalUrl")
-            optionalUrl = try decoder.decode(key: "optionalUrl")
+            optionalUrl = try decoder.decode(key: "optionalUrl", throwIfMissing: true)
             normalStringEnum = try decoder.decode(key: "normalStringEnum")
-            optionalStringEnum = try decoder.decode(key: "optionalStringEnum")
+            optionalStringEnum = try decoder.decode(key: "optionalStringEnum", throwIfMissing: true)
             normalIntEnum = try decoder.decode(key: "normalIntEnum")
-            optionalIntEnum = try decoder.decode(key: "optionalIntEnum")
+            optionalIntEnum = try decoder.decode(key: "optionalIntEnum", throwIfMissing: true)
             normalChild = try decoder.decode(key: "normalChild")
-            optionalChild = try decoder.decode(key: "optionalChild")
+            optionalChild = try decoder.decode(key: "optionalChild", throwIfMissing: true)
             
             normalChildArray = try decoder.decode(key: "normalChildArray")
             normalOptionalChildArray = try decoder.decode(key: "normalOptionalChildArray")
-            optionalChildArray = try decoder.decode(key: "optionalChildArray")
-            optionalOptionalChildArray = try decoder.decode(key: "optionalOptionalChildArray")
+            optionalChildArray = try decoder.decode(key: "optionalChildArray", throwIfMissing: true)
+            optionalOptionalChildArray = try decoder.decode(key: "optionalOptionalChildArray", throwIfMissing: true)
             normalChildDictionary = try decoder.decode(key: "normalChildDictionary")
             normalOptionalChildDictionary = try decoder.decode(key: "normalOptionalChildDictionary")
-            optionalChildDictionary = try decoder.decode(key: "optionalChildDictionary")
-            optionalOptionalChildDictionary = try decoder.decode(key: "optionalOptionalChildDictionary")
+            optionalChildDictionary = try decoder.decode(key: "optionalChildDictionary", throwIfMissing: true)
+            optionalOptionalChildDictionary = try decoder.decode(key: "optionalOptionalChildDictionary", throwIfMissing: true)
             
             normalIntArray = try decoder.decode(key: "normalIntArray")
             normalOptionalIntArray = try decoder.decode(key: "normalOptionalIntArray")
-            optionalIntArray = try decoder.decode(key: "optionalIntArray")
-            optionalOptionalIntArray = try decoder.decode(key: "optionalOptionalIntArray")
+            optionalIntArray = try decoder.decode(key: "optionalIntArray", throwIfMissing: true)
+            optionalOptionalIntArray = try decoder.decode(key: "optionalOptionalIntArray", throwIfMissing: true)
             normalIntDictionary = try decoder.decode(key: "normalIntDictionary")
             normalOptionalIntDictionary = try decoder.decode(key: "normalOptionalIntDictionary")
-            optionalIntDictionary = try decoder.decode(key: "optionalIntDictionary")
-            optionalOptionalIntDictionary = try decoder.decode(key: "optionalOptionalIntDictionary")
+            optionalIntDictionary = try decoder.decode(key: "optionalIntDictionary", throwIfMissing: true)
+            optionalOptionalIntDictionary = try decoder.decode(key: "optionalOptionalIntDictionary", throwIfMissing: true)
         }
         
         func encode() -> Encoder {
             var encoder = Encoder()
             encoder.encode(normalInt, key: "normalInt")
-            encoder.encode(optionalInt, key: "optionalInt")
+            encoder.encode(optionalInt, key: "optionalInt", nullIfNil: true)
             encoder.encode(normalFloat, key: "normalFloat")
-            encoder.encode(optionalFloat, key: "optionalFloat")
+            encoder.encode(optionalFloat, key: "optionalFloat", nullIfNil: true)
             encoder.encode(normalCGFloat, key: "normalCGFloat")
-            encoder.encode(optionalCGFloat, key: "optionalCGFloat")
+            encoder.encode(optionalCGFloat, key: "optionalCGFloat", nullIfNil: true)
             encoder.encode(normalDouble, key: "normalDouble")
-            encoder.encode(optionalDouble, key: "optionalDouble")
+            encoder.encode(optionalDouble, key: "optionalDouble", nullIfNil: true)
             encoder.encode(normalBool, key: "normalBool")
-            encoder.encode(optionalBool, key: "optionalBool")
+            encoder.encode(optionalBool, key: "optionalBool", nullIfNil: true)
             encoder.encode(normalDate, key: "normalDate")
-            encoder.encode(optionalDate, key: "optionalDate")
+            encoder.encode(optionalDate, key: "optionalDate", nullIfNil: true)
             encoder.encode(normalUrl, key: "normalUrl")
-            encoder.encode(optionalUrl, key: "optionalUrl")
+            encoder.encode(optionalUrl, key: "optionalUrl", nullIfNil: true)
             encoder.encode(normalStringEnum, key: "normalStringEnum")
-            encoder.encode(optionalStringEnum, key: "optionalStringEnum")
+            encoder.encode(optionalStringEnum, key: "optionalStringEnum", nullIfNil: true)
             encoder.encode(normalIntEnum, key: "normalIntEnum")
-            encoder.encode(optionalIntEnum, key: "optionalIntEnum")
+            encoder.encode(optionalIntEnum, key: "optionalIntEnum", nullIfNil: true)
             encoder.encode(normalChild, key: "normalChild")
-            encoder.encode(optionalChild, key: "optionalChild")
+            encoder.encode(optionalChild, key: "optionalChild", nullIfNil: true)
             
             encoder.encode(normalChildArray, key: "normalChildArray")
             encoder.encode(normalOptionalChildArray, key: "normalOptionalChildArray")
-            encoder.encode(optionalChildArray, key: "optionalChildArray")
-            encoder.encode(optionalOptionalChildArray, key: "optionalOptionalChildArray")
+            encoder.encode(optionalChildArray, key: "optionalChildArray", nullIfNil: true)
+            encoder.encode(optionalOptionalChildArray, key: "optionalOptionalChildArray", nullIfNil: true)
             encoder.encode(normalChildDictionary, key: "normalChildDictionary")
             encoder.encode(normalOptionalChildDictionary, key: "normalOptionalChildDictionary")
-            encoder.encode(optionalChildDictionary, key: "optionalChildDictionary")
-            encoder.encode(optionalOptionalChildDictionary, key: "optionalOptionalChildDictionary")
+            encoder.encode(optionalChildDictionary, key: "optionalChildDictionary", nullIfNil: true)
+            encoder.encode(optionalOptionalChildDictionary, key: "optionalOptionalChildDictionary", nullIfNil: true)
             
             encoder.encode(normalIntArray, key: "normalIntArray")
             encoder.encode(normalOptionalIntArray, key: "normalOptionalIntArray")
-            encoder.encode(optionalIntArray, key: "optionalIntArray")
-            encoder.encode(optionalOptionalIntArray, key: "optionalOptionalIntArray")
+            encoder.encode(optionalIntArray, key: "optionalIntArray", nullIfNil: true)
+            encoder.encode(optionalOptionalIntArray, key: "optionalOptionalIntArray", nullIfNil: true)
             encoder.encode(normalIntDictionary, key: "normalIntDictionary")
             encoder.encode(normalOptionalIntDictionary, key: "normalOptionalIntDictionary")
-            encoder.encode(optionalIntDictionary, key: "optionalIntDictionary")
-            encoder.encode(optionalOptionalIntDictionary, key: "optionalOptionalIntDictionary")
+            encoder.encode(optionalIntDictionary, key: "optionalIntDictionary", nullIfNil: true)
+            encoder.encode(optionalOptionalIntDictionary, key: "optionalOptionalIntDictionary", nullIfNil: true)
             
             return encoder
         }
@@ -464,7 +464,7 @@ class AnyCoderTests: XCTestCase {
         }
     }
     
-    func testNilIfMissing() {
+    func testThrowIfMissingFalse() {
         
         struct Test: Decodable {
             let name: String?
@@ -472,9 +472,9 @@ class AnyCoderTests: XCTestCase {
             let naming: [String:String]?
             
             init(decoder: Decoder) throws {
-                name = try decoder.decode(key: "name", nilIfMissing: true)
-                names = try decoder.decode(key: "names", nilIfMissing: true)
-                naming = try decoder.decode(key: "naming", nilIfMissing: true)
+                name = try decoder.decode(key: "name")
+                names = try decoder.decode(key: "names")
+                naming = try decoder.decode(key: "naming")
             }
         }
         
@@ -484,6 +484,41 @@ class AnyCoderTests: XCTestCase {
         do {
             let t = try json.decode() as Test
             XCTAssertEqual(nil, t.name)
+        }
+        catch {
+            XCTFail("Unexpected error thrown: \(error)")
+        }
+    }
+    
+    func testThrowIfMissingTrue() {
+        
+        struct Test: Decodable {
+            let name: String?
+            let names: [String]?
+            let naming: [String:String]?
+            
+            init(decoder: Decoder) throws {
+                name = try decoder.decode(key: "name", throwIfMissing: true)
+                names = try decoder.decode(key: "names", throwIfMissing: true)
+                naming = try decoder.decode(key: "naming", throwIfMissing: true)
+            }
+        }
+        
+        let json: [String: Any] = [:]
+        
+        do {
+            let t = try json.decode() as Test
+            XCTAssertEqual(nil, t.name)
+            XCTFail("Should have thrown")
+        }
+        catch (let error as DecoderError) {
+            if case .missing = error.errorType {
+                XCTAssert(true)
+            } else {
+                XCTFail("Unexpected error thrown: \(error)")
+            }
+            XCTAssertEqual("$.name", error.jsonPath)
+            return
         }
         catch {
             XCTFail("Unexpected error thrown: \(error)")
@@ -570,14 +605,14 @@ class AnyCoderTests: XCTestCase {
         }
     }
     
-    func testEncodingSkipIfNilFalse() {
+    func testEncodingNullIfNilTrue() {
         
         struct Test: Encodable {
             let name: String?
             
             func encode() -> Encoder {
                 var encoder = Encoder()
-                encoder.encode(name, key: "name")
+                encoder.encode(name, key: "name", nullIfNil: true)
                 return encoder
             }
         }
@@ -592,14 +627,14 @@ class AnyCoderTests: XCTestCase {
         XCTAssertEqual(testData, refData)
     }
     
-    func testEncodingSkipIfNilTrue() {
+    func testEncodingNullIfNilFalse() {
         
         struct Test: Encodable {
             let name: String?
             
             func encode() -> Encoder {
                 var encoder = Encoder()
-                encoder.encode(name, key: "name", skipIfNil: true)
+                encoder.encode(name, key: "name")
                 return encoder
             }
         }
@@ -792,11 +827,11 @@ extension Program: Decodable {
     public init(decoder: Decoder) throws {
         title = try decoder.decode(key: "Title")
         chanId = try decoder.decoder(forKey: "Channel").decode(key: "ChanId")
-        description = try decoder.decode(key: "Description", nilIfMissing: true)
-        subtitle = try decoder.decode(key: "SubTitle", nilIfMissing: true)
+        description = try decoder.decode(key: "Description")
+        subtitle = try decoder.decode(key: "SubTitle")
         recording = try decoder.decode(key: "Recording")
-        season = try decoder.decode(key: "Season", nilIfMissing: true)
-        episode = try decoder.decode(key: "Episode", nilIfMissing: true)
+        season = try decoder.decode(key: "Season")
+        episode = try decoder.decode(key: "Episode")
         
     }
 }
