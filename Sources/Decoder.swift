@@ -48,8 +48,10 @@ extension Decoder {
     }
     
     public func decoder(forKey key: String, throwIfMissing: Bool = false) throws -> Decoder? {
-        if let value = anyValue(forKey: key) {
-            return try castValue(value) { $0 }
+        if let value = anyValue(forKey: key) {            
+            return try doActionHandlingNull(value: value) {
+                return try castValue(value) { $0 }
+            }
         } else {
             if throwIfMissing {
                 throw DecoderErrorType.missing.error
