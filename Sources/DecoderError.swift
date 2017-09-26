@@ -55,9 +55,9 @@ public struct DecoderError: Error {
         case .missing:
             return "\(jsonPath): value is missing"
         case .invalidType(let type, let value):
-            return "\(jsonPath): invalid value '\(value)' of type '\(type(of: value))', while expected '\(type)'"
+            return "\(jsonPath): invalid value '\(value)' of type '\(Swift.type(of: value))', while expected '\(type)'"
         case .failed(let type, let value):
-            return "\(jsonPath): Failed to convert value '\(value)' of type '\(type(of: value))' to '\(type)'"
+            return "\(jsonPath): Failed to convert value '\(value)' of type '\(Swift.type(of: value))' to '\(type)'"
         }
     }
     

@@ -8,34 +8,34 @@ import AnyCoder
 
 class AnyCoderTests: XCTestCase {
     
-    enum TestStringEnum: String, ValueEncodable, ValueDecodable {
+    enum TestStringEnum: String, AnyValueEncodable, AnyValueDecodable {
         case first
         case second
         case third
     }
     
-    enum TestIntEnum: Int, ValueEncodable, ValueDecodable {
+    enum TestIntEnum: Int, AnyValueEncodable, AnyValueDecodable {
         case first = 1
         case second = 2
         case third = 3
     }
     
 
-    struct TestChild: Decodable, Encodable {
+    struct TestChild: AnyDecodable, AnyEncodable {
         let name: String
         
-        init(decoder: Decoder) throws {
+        init(decoder: AnyDecoder) throws {
             name = try decoder.decode(key: "name")
         }
         
-        func encode() -> Encoder {
-            var encoder = Encoder()
+        func encode() -> AnyEncoder {
+            var encoder = AnyEncoder()
             encoder.encode(name, key: "name")
             return encoder
         }
     }
     
-    struct TestParent: Decodable, Encodable {
+    struct TestParent: AnyDecodable, AnyEncodable {
         let normalInt: Int
         let optionalInt: Int?
         let normalFloat: Float
@@ -77,7 +77,7 @@ class AnyCoderTests: XCTestCase {
         let optionalOptionalIntDictionary: [String: Int?]?
         
         
-        init(decoder: Decoder) throws {
+        init(decoder: AnyDecoder) throws {
             normalInt = try decoder.decode(key: "normalInt")
             optionalInt = try decoder.decode(key: "optionalInt", throwIfMissing: true)
             normalFloat = try decoder.decode(key: "normalFloat")
@@ -118,8 +118,8 @@ class AnyCoderTests: XCTestCase {
             optionalOptionalIntDictionary = try decoder.decode(key: "optionalOptionalIntDictionary", throwIfMissing: true)
         }
         
-        func encode() -> Encoder {
-            var encoder = Encoder()
+        func encode() -> AnyEncoder {
+            var encoder = AnyEncoder()
             encoder.encode(normalInt, key: "normalInt")
             encoder.encode(optionalInt, key: "optionalInt", nullIfNil: true)
             encoder.encode(normalFloat, key: "normalFloat")
@@ -180,11 +180,11 @@ class AnyCoderTests: XCTestCase {
         let json: [String: Any] = [
             "normalInt":1341,
             "optionalInt":NSNull(),
-            "normalFloat":24.3 as Float,
+            "normalFloat":24 as Float,
             "optionalFloat":NSNull(),
-            "normalCGFloat":434.23 as CGFloat,
+            "normalCGFloat":434 as CGFloat,
             "optionalCGFloat":NSNull(),
-            "normalDouble":325235325.32,
+            "normalDouble":325235325 as Double,
             "optionalDouble":NSNull(),
             "normalBool":true,
             "optionalBool":NSNull(),
@@ -236,11 +236,11 @@ class AnyCoderTests: XCTestCase {
         let json: [String: Any] = [
             "normalInt": NSNumber(value: 1341) as Any,
             "optionalInt": NSNull(),
-            "normalFloat": NSNumber(value: 24.3) as Any,
+            "normalFloat": NSNumber(value: 24) as Any,
             "optionalFloat": NSNull(),
-            "normalCGFloat": NSNumber(value: 434.23) as Any,
+            "normalCGFloat": NSNumber(value: 434) as Any,
             "optionalCGFloat": NSNull(),
-            "normalDouble": NSNumber(value: 325235325.32) as Any,
+            "normalDouble": NSNumber(value: 325235325) as Any,
             "optionalDouble":NSNull(),
             "normalBool":true,
             "optionalBool":NSNull(),
@@ -277,9 +277,13 @@ class AnyCoderTests: XCTestCase {
             let testParent = try json.decode() as TestParent
             let testJson = testParent.encode()
             
-            let testData = try JSONSerialization.data(withJSONObject: testJson, options: [])
-            let refData = try JSONSerialization.data(withJSONObject: json, options: [])
+            let testData = try JSONSerialization.data(withJSONObject: testJson, options: [.prettyPrinted])
+            let refData = try JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted])
             XCTAssertEqual(testData, refData)
+            
+            print(String(data: testData, encoding: .utf8)!)
+            print("-------")
+            print(String(data: refData, encoding: .utf8)!)
         }
         catch {
             XCTFail("Unexpected error thrown: \(error)")
@@ -291,12 +295,12 @@ class AnyCoderTests: XCTestCase {
         let json: [String: Any] = [
             "normalInt": NSNumber(value: 1341) as Any,
             "optionalInt": NSNumber(value: 1341) as Any,
-            "normalFloat": NSNumber(value: 24.3) as Any,
-            "optionalFloat": NSNumber(value: 24.3) as Any,
-            "normalCGFloat": NSNumber(value: 434.23) as Any,
-            "optionalCGFloat": NSNumber(value: 434.23) as Any,
-            "normalDouble": NSNumber(value: 325235325.32) as Any,
-            "optionalDouble": NSNumber(value: 325235325.32) as Any,
+            "normalFloat": NSNumber(value: 24) as Any,
+            "optionalFloat": NSNumber(value: 24) as Any,
+            "normalCGFloat": NSNumber(value: 434) as Any,
+            "optionalCGFloat": NSNumber(value: 434) as Any,
+            "normalDouble": NSNumber(value: 325235325) as Any,
+            "optionalDouble": NSNumber(value: 325235325) as Any,
             "normalBool":true,
             "optionalBool": true,
             "normalDate": NSNumber(value: 423423432) as Any,
@@ -384,10 +388,10 @@ class AnyCoderTests: XCTestCase {
     
     func testFailedException() {
         
-        struct TestColor: Decodable {
+        struct TestColor: AnyDecodable {
             let url: URL
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 url = try decoder.decode(key: "url")
             }
         }
@@ -412,15 +416,15 @@ class AnyCoderTests: XCTestCase {
     
     func testFailedEnumException() {
         
-        enum TestEnum: String, ValueDecodable {
+        enum TestEnum: String, AnyValueDecodable {
             case first
             case second
         }
         
-        struct TestObject: Decodable {
+        struct TestObject: AnyDecodable {
             let e: TestEnum
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 e = try decoder.decode(key: "e")
             }
         }
@@ -447,10 +451,10 @@ class AnyCoderTests: XCTestCase {
     
     func testFailedOptionalException() {
         
-        struct TestUrl: Decodable {
+        struct TestUrl: AnyDecodable {
             let url: URL?
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 url = try decoder.decode(key: "url")
             }
         }
@@ -466,12 +470,12 @@ class AnyCoderTests: XCTestCase {
     
     func testThrowIfMissingFalse() {
         
-        struct Test: Decodable {
+        struct Test: AnyDecodable {
             let name: String?
             let names: [String]?
             let naming: [String:String]?
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 name = try decoder.decode(key: "name")
                 names = try decoder.decode(key: "names")
                 naming = try decoder.decode(key: "naming")
@@ -492,12 +496,12 @@ class AnyCoderTests: XCTestCase {
     
     func testThrowIfMissingTrue() {
         
-        struct Test: Decodable {
+        struct Test: AnyDecodable {
             let name: String?
             let names: [String]?
             let naming: [String:String]?
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 name = try decoder.decode(key: "name", throwIfMissing: true)
                 names = try decoder.decode(key: "names", throwIfMissing: true)
                 naming = try decoder.decode(key: "naming", throwIfMissing: true)
@@ -527,12 +531,12 @@ class AnyCoderTests: XCTestCase {
     
     func testValueIfMissing() {
         
-        struct Test: Decodable {
+        struct Test: AnyDecodable {
             let name: String
             let names: [String]
             let naming: [String:String]
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 name = try decoder.decode(key: "name", valueIfMissing: "John")
                 names = try decoder.decode(key: "names", valueIfMissing: ["John"])
                 naming = try decoder.decode(key: "naming", valueIfMissing: ["First":"John"])
@@ -555,18 +559,18 @@ class AnyCoderTests: XCTestCase {
     
     func testInnerDecode() {
         
-        struct InnerTest: Decodable {
+        struct InnerTest: AnyDecodable {
             let name: String
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 name = try decoder.decode(key: "name")
             }
         }
     
-        struct Test: Decodable {
+        struct Test: AnyDecodable {
             let innerTest: InnerTest
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 innerTest = try decoder.decode()
             }
         }
@@ -585,7 +589,7 @@ class AnyCoderTests: XCTestCase {
     
     func testSet() {
         
-        struct Test: ValueDecodable {
+        struct Test: AnyValueDecodable {
             let set: Set<TestHash>
             
             init(value: [Any]) throws {
@@ -607,11 +611,11 @@ class AnyCoderTests: XCTestCase {
     
     func testEncodingNullIfNilTrue() {
         
-        struct Test: Encodable {
+        struct Test: AnyEncodable {
             let name: String?
             
-            func encode() -> Encoder {
-                var encoder = Encoder()
+            func encode() -> AnyEncoder {
+                var encoder = AnyEncoder()
                 encoder.encode(name, key: "name", nullIfNil: true)
                 return encoder
             }
@@ -629,11 +633,11 @@ class AnyCoderTests: XCTestCase {
     
     func testEncodingNullIfNilFalse() {
         
-        struct Test: Encodable {
+        struct Test: AnyEncodable {
             let name: String?
             
-            func encode() -> Encoder {
-                var encoder = Encoder()
+            func encode() -> AnyEncoder {
+                var encoder = AnyEncoder()
                 encoder.encode(name, key: "name")
                 return encoder
             }
@@ -651,26 +655,26 @@ class AnyCoderTests: XCTestCase {
     
     func testKeyPath() {
         
-        struct A: Decodable {
+        struct A: AnyDecodable {
             let b: B
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 b = try decoder.decode(key: "b")
             }
         }
         
-        struct B: Decodable {
+        struct B: AnyDecodable {
             let c: [C]
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 c = try decoder.decode(key: "c")
             }
         }
         
-        struct C: Decodable {
+        struct C: AnyDecodable {
             let d: String
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 d = try decoder.decode(key: "d")
             }
         }
@@ -726,17 +730,17 @@ class AnyCoderTests: XCTestCase {
         }
         
         
-        struct Record: Decodable, Encodable {
+        struct Record: AnyDecodable, AnyEncodable {
             let timestamp: Date?
             
-            init(decoder: Decoder) throws {
+            init(decoder: AnyDecoder) throws {
                 timestamp = try decoder.decode(key: "timestamp", transform: {
                     Cache.iso8601DateFormatter.date(from: $0)
                 })
             }
             
-            func encode() -> Encoder {
-                var encoder = Encoder()
+            func encode() -> AnyEncoder {
+                var encoder = AnyEncoder()
                 encoder.encode(timestamp, key: "timestamp") {
                     Cache.iso8601DateFormatter.string(from: $0)
                 }
@@ -762,10 +766,10 @@ class AnyCoderTests: XCTestCase {
     
 }
 
-struct TestHash: Decodable, Hashable {
+struct TestHash: AnyDecodable, Hashable {
     let name: String
     
-    init(decoder: Decoder) throws {
+    init(decoder: AnyDecoder) throws {
         name = try decoder.decode(key: "name")
     }
     
@@ -781,14 +785,14 @@ extension TestHash {
 }
 
 public struct Recording {
-    enum Status: String, ValueDecodable {
+    enum Status: String, AnyValueDecodable {
         case None = "0"
         case Recorded = "-3"
         case Recording = "-2"
         case Unknown
     }
     
-    enum RecGroup: String, ValueDecodable {
+    enum RecGroup: String, AnyValueDecodable {
         case Deleted = "Deleted"
         case Default = "Default"
         case LiveTV = "LiveTV"
@@ -812,9 +816,9 @@ public struct Program {
     let episode:String?
 }
 
-extension Recording: Decodable {
+extension Recording: AnyDecodable {
     
-    public init(decoder: Decoder) throws {
+    public init(decoder: AnyDecoder) throws {
         startTsStr = try decoder.decode(key: "StartTs")
         recordId = try decoder.decode(key: "RecordId")
         status = (try? decoder.decode(key: "Status")) ?? .Unknown
@@ -822,9 +826,9 @@ extension Recording: Decodable {
     }
 }
 
-extension Program: Decodable {
+extension Program: AnyDecodable {
     
-    public init(decoder: Decoder) throws {
+    public init(decoder: AnyDecoder) throws {
         title = try decoder.decode(key: "Title")
         chanId = try decoder.decoder(forKey: "Channel").decode(key: "ChanId")
         description = try decoder.decode(key: "Description")

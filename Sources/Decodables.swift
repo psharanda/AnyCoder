@@ -7,7 +7,7 @@ import Foundation
 import CoreGraphics
 
 //MARK:- scalar decodables
-public protocol ScalarDecodable : ValueDecodable {}
+public protocol ScalarDecodable : AnyValueDecodable {}
 
 extension ScalarDecodable {
     public init(value: Self) {
@@ -32,21 +32,21 @@ extension String : ScalarDecodable {}
 extension Bool : ScalarDecodable {}
 
 //MARK:- URL as decodable
-extension URL: ValueDecodable {
+extension URL: AnyValueDecodable {
     public init?(value: String) {
         self.init(string: value)
     }
 }
 
-//MARK:- RawRepresentable as decodable, enum itself must be marked as conforming ValueDecodable
-extension ValueDecodable where Self: RawRepresentable, Self.RawValue: ValueDecodable {
+//MARK:- RawRepresentable as decodable, enum itself must be marked as conforming AnyValueDecodable
+extension AnyValueDecodable where Self: RawRepresentable, Self.RawValue: AnyValueDecodable {
     public init?(value: RawValue) {
         self.init(rawValue: value)
     }
 }
 
 //MARK:- Date as decodable
-extension Date: ValueDecodable {
+extension Date: AnyValueDecodable {
     public init(value: Double) {
         self.init(timeIntervalSince1970: value)
     }
