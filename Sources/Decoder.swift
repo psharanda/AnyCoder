@@ -85,7 +85,7 @@ extension AnyDecoder {
         }
     }
     
-    private func handleObjectDecode<T, U>(key: String, throwIfMissing: Bool, action: (T) throws -> U) throws -> U? {
+    private func handleObjectDecode<T, U>(key: String, throwIfMissing: Bool, action: (T) throws -> U?) throws -> U? {
         return try commitAction(path: .key(key)) {
             if let value = anyValue(forKey: key) {
                 return try doActionHandlingNull(value: value) {
@@ -128,7 +128,7 @@ extension AnyDecoder {
     }
     
     public func decode<T>(key: String,  throwIfMissing: Bool = false, transform: (AnyDecoder) throws ->T?) throws -> T? {
-        return try handleObjectDecode(key: key, throwIfMissing: throwIfMissing) { (decoder: AnyDecoder) -> T in
+        return try handleObjectDecode(key: key, throwIfMissing: throwIfMissing) { (decoder: AnyDecoder) -> T? in
             try decoder.decode(transform: transform)
         }
     }
@@ -160,7 +160,7 @@ extension AnyDecoder {
     }
     
     public func decode<T, ValueType>(key: String,  throwIfMissing: Bool = false, transform: (ValueType) throws ->T?) throws -> T? {
-        return try handleObjectDecode(key: key, throwIfMissing: throwIfMissing) { (value: Any) -> T in
+        return try handleObjectDecode(key: key, throwIfMissing: throwIfMissing) { (value: Any) -> T? in
             try Decoding.decode(value, transform: transform)
         }
     }
@@ -576,12 +576,20 @@ public struct Decoding {
         return try decode(value, transform: T.init)
     }
     
+    public static func decode<T: AnyValueDecodable>(_ value: Any) throws -> T? {
+        return try decode(value, transform: T.init)
+    }
+    
     public static func decode<T, ValueType>(_ value: Any, transform: (ValueType) throws ->T? ) throws -> T {
         if let value = try castValue(value) { try transform($0)} {
             return value
         } else {
             throw DecoderErrorType.failed(T.self, value).error
         }
+    }
+    
+    public static func decode<T, ValueType>(_ value: Any, transform: (ValueType) throws ->T? ) throws -> T? {
+        return try castValue(value) { try transform($0)}
     }
     
     //object
@@ -649,6 +657,15 @@ fileprivate func castValue<T, U>(_ value: Any, action: (T) throws ->U) throws ->
     }
 }
 
+fileprivate func castValue<T, U>(_ value: Any, action: (T) throws ->U?) throws -> U? {
+    if let target = value as? T {
+        let res = try action(target)
+        return res
+    } else {
+        throw DecoderErrorType.invalidType(T.self, value).error
+    }
+}
+
 //MARK: - utils
 fileprivate func commitAction<U>(path: DecoderErrorPathComponent, action: () throws ->U) throws -> U {
     do {
@@ -662,7 +679,7 @@ fileprivate func commitAction<U>(path: DecoderErrorPathComponent, action: () thr
     }
 }
 
-fileprivate func doActionHandlingNull<U>(value: Any, action: () throws ->U) throws -> U? {
+fileprivate func doActionHandlingNull<U>(value: Any, action: () throws ->U?) throws -> U? {
     do {
         return try action()
     }

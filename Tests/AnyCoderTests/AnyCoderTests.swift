@@ -449,6 +449,32 @@ class AnyCoderTests: XCTestCase {
         }
     }
     
+    func testOptionalEnumException() {
+        
+        enum TestEnum: String, AnyValueDecodable {
+            case first
+            case second
+        }
+        
+        struct TestObject: AnyDecodable {
+            let e: TestEnum?
+            
+            init(decoder: AnyDecoder) throws {
+                e = try decoder.decode(key: "e")
+            }
+        }
+        
+        let json: [String: Any] = ["e": "1"]
+        do {
+            _ = try json.decode() as TestObject
+            
+            XCTAssert(true)
+        }
+        catch {
+            XCTFail("Unexpected error thrown: \(error)")
+        }
+    }
+    
     func testFailedOptionalException() {
         
         struct TestUrl: AnyDecodable {
