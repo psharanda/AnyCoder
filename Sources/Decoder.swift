@@ -605,7 +605,17 @@ public struct Decoding {
         return try decode(value, transform: T.init)
     }
     
+    public static func decode<T: AnyDecodable>(_ value: Any) throws -> T? {
+        return try decode(value, transform: T.init)
+    }
+    
     public static func decode<T>(_ value: Any, transform: (AnyDecoder) throws ->T?) throws -> T {
+        return try castValue(value) { (decoder: AnyDecoder) in
+            try decoder.decode(transform: transform)
+        }
+    }
+    
+    public static func decode<T>(_ value: Any, transform: (AnyDecoder) throws ->T?) throws -> T? {
         return try castValue(value) { (decoder: AnyDecoder) in
             try decoder.decode(transform: transform)
         }

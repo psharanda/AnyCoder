@@ -494,6 +494,25 @@ class AnyCoderTests: XCTestCase {
         }
     }
     
+    func testOptionalInit2() {
+        
+        struct TestUrl: AnyDecodable {
+            let url: URL?
+            
+            init?(decoder: AnyDecoder) throws {
+                return nil
+            }
+        }
+        
+        let json: [String: Any] = ["url": NSNull()]
+        do {
+            _ = try Decoding.decode(json) as TestUrl?
+        }
+        catch {
+            XCTFail("Should haven't thrown")
+        }
+    }
+    
     func testFailedOptionalException() {
         
         struct TestUrl: AnyDecodable {
