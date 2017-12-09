@@ -73,6 +73,14 @@ extension AnyDecoder {
         }
     }
     
+    public func decode<T: AnyDecodable>() throws -> T? {
+        return try decode(transform: T.init)
+    }
+    
+    public func decode<T>(transform: (AnyDecoder) throws ->T? ) throws -> T? {
+        return try transform(self)
+    }
+    
     //MARK:- handle object decode
     
     private func handleObjectDecode<T, U>(key: String, action: (T) throws -> U) throws -> U {
