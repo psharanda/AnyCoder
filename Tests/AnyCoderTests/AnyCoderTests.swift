@@ -224,7 +224,7 @@ class AnyCoderTests: XCTestCase {
             
             let testData = try JSONSerialization.data(withJSONObject: testJson, options: [])
             let refData = try JSONSerialization.data(withJSONObject: json, options: [])
-            XCTAssertEqual(testData, refData)
+            XCTAssertEqual(try JSONSerialization.jsonObject(with: testData, options: []) as! NSDictionary, try JSONSerialization.jsonObject(with: refData, options: []) as! NSDictionary)
         }
         catch {
             XCTFail("Unexpected error thrown: \(error)")
@@ -279,11 +279,7 @@ class AnyCoderTests: XCTestCase {
             
             let testData = try JSONSerialization.data(withJSONObject: testJson, options: [.prettyPrinted])
             let refData = try JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted])
-            XCTAssertEqual(testData, refData)
-            
-            print(String(data: testData, encoding: .utf8)!)
-            print("-------")
-            print(String(data: refData, encoding: .utf8)!)
+            XCTAssertEqual(try JSONSerialization.jsonObject(with: testData, options: []) as! NSDictionary, try JSONSerialization.jsonObject(with: refData, options: []) as! NSDictionary)
         }
         catch {
             XCTFail("Unexpected error thrown: \(error)")
@@ -338,7 +334,7 @@ class AnyCoderTests: XCTestCase {
             
             let testData = try JSONSerialization.data(withJSONObject: testJson, options: [])
             let refData = try JSONSerialization.data(withJSONObject: json, options: [])
-            XCTAssertEqual(testData, refData)
+            XCTAssertEqual(try JSONSerialization.jsonObject(with: testData, options: []) as! NSDictionary, try JSONSerialization.jsonObject(with: refData, options: []) as! NSDictionary)
         }
         catch {
             XCTFail("Unexpected error thrown: \(error)")
@@ -692,7 +688,7 @@ class AnyCoderTests: XCTestCase {
         
         let testData = try! JSONSerialization.data(withJSONObject: testJson, options: [])
         let refData = try! JSONSerialization.data(withJSONObject: json, options: [])
-        XCTAssertEqual(testData, refData)
+        XCTAssertEqual(try JSONSerialization.jsonObject(with: testData, options: []) as! NSDictionary, try JSONSerialization.jsonObject(with: refData, options: []) as! NSDictionary)
     }
     
     func testEncodingNullIfNilFalse() {
@@ -714,7 +710,7 @@ class AnyCoderTests: XCTestCase {
         
         let testData = try! JSONSerialization.data(withJSONObject: testJson, options: [])
         let refData = try! JSONSerialization.data(withJSONObject: json, options: [])
-        XCTAssertEqual(testData, refData)
+        XCTAssertEqual(try JSONSerialization.jsonObject(with: testData, options: []) as! NSDictionary, try JSONSerialization.jsonObject(with: refData, options: []) as! NSDictionary)
     }
     
     func testKeyPath() {
@@ -819,7 +815,7 @@ class AnyCoderTests: XCTestCase {
         
         let testData = try! JSONSerialization.data(withJSONObject: testJson, options: [])
         let refData = try! JSONSerialization.data(withJSONObject: json, options: [])
-        XCTAssertEqual(testData, refData)
+        XCTAssertEqual(try JSONSerialization.jsonObject(with: testData, options: []) as! NSDictionary, try JSONSerialization.jsonObject(with: refData, options: []) as! NSDictionary)
     }
     
     private lazy var data:Data = {
